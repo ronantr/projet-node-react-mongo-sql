@@ -23,4 +23,18 @@ app.get('/', function (req, res) {
 // Starts up server and displays the port the server is running on
 app.listen(PORT, function () {
     console.log('Your node js server is running on PORT:', PORT);
-})
+});
+
+app.get('/user/make', (req, res) => {
+    console.log(req.body);
+    res.json({
+      message: 'Objet créé !'
+    });
+  });
+
+  app.get('/user/delete', (req, res) => {
+    console.log(req.body);
+    res.json({
+      message: 'Objet delete !'
+    });
+  });
