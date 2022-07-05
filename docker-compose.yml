@@ -13,14 +13,14 @@ services:
       - "4000:4000" # specify the NodeJS port and open up port 4000 on docker
     links:
       - database_mongodb # name we use for mongoDB database_mongodb 
-      - database_mysql # name we use for mongoDB database_mql
+      - database_postgress # name we use for mongoDB database_mql
     volumes: # Allows changes to local host to sync with docker container
       - "./nodejs_server/:/server" # should be the same as your WORKDIR in your DockerFile 
           # Don't sync the node_modules directory back to the client.
       - "./server/node_modules"
     depends_on: # tells the database_mongodb to start first before the NodeJS app
       - database_mongodb
-      - database_mysql
+      - database_postgress
   
   react_ui: # name of the react_ui
     image: node
@@ -51,8 +51,8 @@ services:
       - ./SampleCollections:/usr/local/sampleCollections
       - mongo-data:/data/db
     working_dir: /usr/local/sampleCollections
-    
-  database_mysql: # name of the mysql database_mysql 
+
+  database_postgress: # name of the mysql database_mysql 
     image: postgres:alpine # this is the mysql image if you wanted MySQL you would use mysql 
     ports: 
       - "3306:3306" # specify the mySQL port and connect port 3306 to docker
