@@ -1,0 +1,217 @@
+import React, { useEffect } from 'react';
+
+// import { makeStyles } from '@mui/styles';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Divider from '@mui/material/Divider';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Avatar from '@mui/material/Avatar';
+import Fab from '@mui/material/Fab';
+import SendIcon from '@mui/icons-material/Send';
+const classes = {
+  table: {
+    minWidth: 650,
+  },
+  chatSection: {
+    width: '100%',
+    height: '80vh'
+  },
+  headBG: {
+      backgroundColor: '#e0e0e0'
+  },
+  borderRight500: {
+      borderRight: '1px solid #e0e0e0'
+  },
+  messageArea: {
+    height: '70vh',
+    overflowY: 'auto'
+  }
+};
+
+const dataChats= [
+    {
+        id: "chat-1",
+        participants: [
+            {
+                id: "user-1",
+        name: 'John Doe',   
+        avatar: 'https://avatars.dicebear.com/api/male/john.svg?background=%230000ff',
+            },
+            {
+                id: "user-2",
+        name: 'Jane Doe',
+        avatar: 'https://avatars.dicebear.com/api/male/jane.svg',
+            }
+        ],
+        messages: [
+            {
+                id: "mes-1",
+                message: 'Hello',
+                sender: {
+                    id: "user-1",
+                    name: 'John Doe',
+                }
+            },
+            {
+                id: "mes-2",
+                message: 'Hi',
+                sender: {
+                    id: "user-2",
+                    name: 'Jane Doe',
+                }   
+            },
+            {
+                id: "mes-3",
+                message: 'TEst 1',
+                sender: {
+                    id: "user-1",
+                    name: 'John Doe',
+                }
+            },
+            {
+                id: "mes-4",
+                message: 'test 2',
+                sender: {
+                    id: "user-2",
+                    name: 'Jane Doe',
+                }   
+            }
+        ]
+    },
+    {
+        id: "chat-2",
+        participants: [
+            {
+                id: "user-1",
+        name: 'John Doe',   
+        avatar: 'https://avatars.dicebear.com/api/male/john.svg?background=%230000ff',
+            },
+            {
+                id: "user-3",
+        name: 'Alex',
+        avatar:'https://avatars.dicebear.com/api/male/alex.svg?',
+            }
+        ],
+        messages: [
+            {
+                id: "mes-5",
+                message: 'Bonjour',
+                sender: {
+                   id: "user-1",
+                    name: 'John Doe',
+                }
+            },
+            {
+                id: "mes-6",
+                message: 'Bonjour',
+                sender: {
+                    id:"user-3",
+                    name: 'Alex',
+                }   
+            },
+            {
+                id: "mes-7",
+                message: 'Comment tu vas ?',
+                sender: {
+                   id: "user-1",
+                    name: 'John Doe',
+                }
+            },
+            {
+                id: "mes-8",
+                message: 'Je suis bien et toi ?',
+                sender: {
+                    id:"user-3",
+                    name: 'Alex',
+                }   
+            }
+        ]
+    },
+]
+
+const Chat = () => {
+//   const classes = useStyles();
+const [currentUser, setCurrentUser] = React.useState( {
+    id: "user-1",
+name: 'John Doe',   
+avatar: 'https://i.pravatar.cc/100',
+});
+
+const [chat, setChat] = React.useState(dataChats[0]);
+
+const handleChangeChat = (chat) => {
+    console.log(chat.messages);
+    setChat(chat);
+}
+
+  return (
+      <div>
+        <Grid container>
+            <Grid item xs={12} >
+                <Typography variant="h5" className="header-message">Chat</Typography>
+            </Grid>
+        </Grid>
+        <Grid container component={Paper} style={classes.chatSection}>
+            <Grid item xs={3} style={classes.borderRight500}>
+                
+                <Grid item xs={12} style={{padding: '10px'}}>
+                    <TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth />
+                </Grid>
+                <Divider />
+                <List>
+                    {dataChats.map(chat => 
+                        (chat.participants.map(participant => {
+                            if(participant.id !== currentUser.id){
+                                return (
+                                    <ListItem button onClick={() => handleChangeChat(chat)} key={participant.id}>
+                                        <ListItemIcon>
+                                            <Avatar src={participant.avatar} />
+                                        </ListItemIcon>
+                                        <ListItemText primary={participant.name} />
+                                    </ListItem>
+                                )
+                            }
+                            return null
+                        })
+                        )
+                    )}
+                        
+                </List>
+            </Grid>
+            <Grid item xs={9}>
+                <List style={classes.messageArea}>
+                    {chat.messages.map(message => (
+                            <ListItem key={message.id}>
+                            <Grid container>
+                            <Grid item xs={12}>
+                                <ListItemText align={message.sender.id === currentUser.id ? "right" : "left"} primary={message.message}/>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <ListItemText align={message.sender.id === currentUser.id ? "right" : "left"} secondary="09:30"/>
+                            </Grid>
+                        </Grid>
+                        </ListItem>
+                    ))}
+                </List>
+                <Divider />
+                <Grid container style={{padding: '20px'}}>
+                    <Grid item xs={11}>
+                        <TextField id="outlined-basic-email" label="Type Something" fullWidth />
+                    </Grid>
+                    <Grid item xs={1} align="right">
+                        <Fab color="primary" aria-label="add"><SendIcon /></Fab>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+      </div>
+  );
+}
+export default Chat
+
+
