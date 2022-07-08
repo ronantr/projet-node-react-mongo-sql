@@ -7,12 +7,10 @@ import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
 import Fab from '@mui/material/Fab';
 import SendIcon from '@mui/icons-material/Send';
+import ChatList from '../components/chat/ChatList';
+import MessageItem from '../components/chat/MessageItem';
 const classes = {
   table: {
     minWidth: 650,
@@ -168,34 +166,19 @@ const handleChangeChat = (chat) => {
                         (chat.participants.map(participant => {
                             if(participant.id !== currentUser.id){
                                 return (
-                                    <ListItem button onClick={() => handleChangeChat(chat)} key={participant.id}>
-                                        <ListItemIcon>
-                                            <Avatar src={participant.avatar} />
-                                        </ListItemIcon>
-                                        <ListItemText primary={participant.name} />
-                                    </ListItem>
+                                    <ChatList key={participant.id} handleChangeChat={handleChangeChat} chat={chat} participant={participant} />
                                 )
                             }
                             return null
                         })
                         )
                     )}
-                        
                 </List>
             </Grid>
             <Grid item xs={9}>
                 <List style={classes.messageArea}>
                     {chat.messages.map(message => (
-                            <ListItem key={message.id}>
-                            <Grid container>
-                            <Grid item xs={12}>
-                                <ListItemText align={message.sender.id === currentUser.id ? "right" : "left"} primary={message.message}/>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <ListItemText align={message.sender.id === currentUser.id ? "right" : "left"} secondary="09:30"/>
-                            </Grid>
-                        </Grid>
-                        </ListItem>
+                            <MessageItem key={message.id} message={message} currentUser={currentUser} />
                     ))}
                 </List>
                 <Divider />
