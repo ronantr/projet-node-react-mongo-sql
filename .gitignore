@@ -1,3 +1,5 @@
 react_u/node_modules/*
 nodejs_server/node_modules/*
+SampleCollections
 .DS_Store
+db-data
