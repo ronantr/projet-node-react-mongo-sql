@@ -3,7 +3,9 @@ const app = express();
 const mongoose = require("mongoose");
 const mysql = require("mysql");
 const cors = require("cors");
+const authRoutes = require("./routes/auth");
 require("dotenv").config();
+
 // USE THIS BECAUSE of based of name we gave the database
 mongoose
   .connect(process.env.MONGO_URL, {
@@ -31,3 +33,5 @@ app.use(express.json());
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
+
+app.use("/api/auth", authRoutes);

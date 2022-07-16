@@ -90,6 +90,7 @@ export default function SignIn() {
             })
         })    
         const reponse = await data.json();
+        console.log(reponse);
   };
 }
 
