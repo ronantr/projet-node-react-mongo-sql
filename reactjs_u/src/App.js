@@ -3,7 +3,9 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import Chat from "./pages/Chat";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 import Profile from "./pages/Profile";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/register" element={<Register />} />
+        <Route exact path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );
