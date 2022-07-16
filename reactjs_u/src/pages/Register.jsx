@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,17 +12,92 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Alert, Snackbar } from '@mui/material';
+import { registerRoute } from '../utils/ApiRoutes';
 
 const theme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+    const [errorMessage, setErrorMessage] = useState({
+        open: false,
+        message: ''
+    })
+    const [values, setValues] = useState({
+        firstName: '',
+        lastName: '',
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+
+    const handleChange = (event) => {
+    setValues({ ...values, [event.target.name]: event.target.value });
+    };
+
+    const handleValidate = () => {
+        const { firstName, lastName, username, email, password, confirmPassword } = values;
+        if(password !== confirmPassword) {
+            setErrorMessage({open:true,message:"Passwords do not match"});
+            return false;
+        }
+
+        if (password !== confirmPassword) {
+            setErrorMessage({
+                open:true,
+                message:"Password and confirm password should be same."
+            });
+            return false;
+          } else if (username.length < 4) {
+            setErrorMessage({
+                open:true,
+                message:"Username should be greater than 4 characters."
+            });
+            return false;
+          } else if (password.length < 8) {
+            setErrorMessage({
+                open:true,
+                message:"Password should be equal or greater than 8 characters."
+            });
+            return false;
+          } else if (email === "") {
+            setErrorMessage({
+                open:true,
+                message:"Email is required."
+            });
+            return false;
+          }
+      
+          return true;
+    }
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    if(handleValidate()) {
+        const { firstName, lastName, username, email, password } = values;
+        const data = await fetch(registerRoute, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                firstName,
+                lastName,
+                username,
+                email,
+                password
+            })
+        })    
+        const reponse = await data.json();
+  };
+}
+
+  const handleErrorMessageClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setErrorMessage({...errorMessage, open: false});
   };
 
   return (
@@ -45,24 +120,39 @@ export default function SignIn() {
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
+                margin="normal"
+                required
+                fullWidth
                 autoComplete="fname"
                 name="firstName"
                 variant="outlined"
-                required
-                fullWidth
                 id="firstName"
                 label="First Name"
                 autoFocus
+                onChange={(e) => handleChange(e)}
               />
               <TextField
-                variant="outlined"
+                margin="normal"
                 required
                 fullWidth
                 id="lastName"
                 label="Last Name"
                 name="lastName"
                 autoComplete="lname"
+                onChange={(e) => handleChange(e)}
+
               />
+             <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
+              onChange={(e) => handleChange(e)}
+
+            />
             <TextField
               margin="normal"
               required
@@ -71,7 +161,8 @@ export default function SignIn() {
               label="Email Address"
               name="email"
               autoComplete="email"
-              autoFocus
+              onChange={(e) => handleChange(e)}
+
             />
             <TextField
               margin="normal"
@@ -82,6 +173,19 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={(e) => handleChange(e)}
+            />
+
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="confirmPassword"
+              label="confirm Password"
+              type="password"
+              id="confirmPassword"
+              autoComplete="confirmPassword"
+              onChange={(e) => handleChange(e)}
             />
 
             <Button
@@ -105,6 +209,14 @@ export default function SignIn() {
               </Grid>
             </Grid>
           </Box>
+
+          {errorMessage &&  <Snackbar open={errorMessage.open} autoHideDuration={10000} onClose={handleErrorMessageClose}>
+            <Alert onClose={handleErrorMessageClose} severity="error" sx={{ width: '100%' }}>
+            {errorMessage.message}
+            </Alert>
+      </Snackbar>
+      }
+
         </Box>
       </Container>
     </ThemeProvider>
