@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,18 +12,94 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Alert, Snackbar } from '@mui/material';
+import { loginRoute } from '../utils/ApiRoutes';
+
+import { useNavigate } from "react-router-dom";
 
 const theme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  let navigate= useNavigate();
+
+    const [errorMessage, setErrorMessage] = useState({
+        open: false,
+        message: ''
+    })
+    const [values, setValues] = useState({
+        username: "",
+        password: "",
+      });
+
+
+    const handleChange = (event) => {
+    setValues({ ...values, [event.target.name]: event.target.value });
+    };
+
+    const handleValidate = () => {
+        const { username, password } = values;
+
+        if (username.length === "") {
+            setErrorMessage({
+                open:true,
+                message:"Username is required."
+            });
+          }
+          if (password === "") {
+            setErrorMessage({
+                open:true,
+                message:"password is required."
+            });
+            return false;
+          }
+      
+          return true;
+    }
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    if(handleValidate()) {
+        const {username, password } = values;
+        const data = await fetch(loginRoute, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username,
+                password
+            })
+        })    
+        const reponse = await data.json()
+        if(data.status === 200) {  
+          localStorage.setItem('app-user', JSON.stringify(reponse.username)); 
+          navigate('/');
+
+        }
+        else {
+          setErrorMessage({
+            open:true,
+            message:reponse.message
+          });
+        }
+        console.log(reponse.message);
   };
+}
+
+  const handleErrorMessageClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setErrorMessage({...errorMessage, open: false});
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem('app-user')) {
+      navigate('/');
+    }
+  }
+  , [navigate])
+  
 
   return (
     <ThemeProvider theme={theme}>
@@ -41,18 +117,19 @@ export default function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Log in
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField
+             <TextField
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
+              onChange={(e) => handleChange(e)}
+
             />
             <TextField
               margin="normal"
@@ -63,11 +140,9 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={(e) => handleChange(e)}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
+
             <Button
               type="submit"
               fullWidth
@@ -83,12 +158,20 @@ export default function SignIn() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/register" variant="body2">
+              <Link href="/register" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
             </Grid>
           </Box>
+
+          {errorMessage &&  <Snackbar open={errorMessage.open} autoHideDuration={10000} onClose={handleErrorMessageClose}>
+            <Alert onClose={handleErrorMessageClose} severity="error" sx={{ width: '100%' }}>
+            {errorMessage.message}
+            </Alert>
+      </Snackbar>
+      }
+
         </Box>
       </Container>
     </ThemeProvider>

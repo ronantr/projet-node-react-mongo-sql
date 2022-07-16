@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -14,10 +14,12 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Alert, Snackbar } from '@mui/material';
 import { registerRoute } from '../utils/ApiRoutes';
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme();
 
 export default function SignIn() {
+  let navigate= useNavigate();
     const [errorMessage, setErrorMessage] = useState({
         open: false,
         message: ''
@@ -38,30 +40,28 @@ export default function SignIn() {
 
     const handleValidate = () => {
         const { firstName, lastName, username, email, password, confirmPassword } = values;
-        if(password !== confirmPassword) {
-            setErrorMessage({open:true,message:"Passwords do not match"});
-            return false;
-        }
-
         if (password !== confirmPassword) {
             setErrorMessage({
                 open:true,
                 message:"Password and confirm password should be same."
             });
             return false;
-          } else if (username.length < 4) {
+          }
+           if (username.length < 4) {
             setErrorMessage({
                 open:true,
                 message:"Username should be greater than 4 characters."
             });
             return false;
-          } else if (password.length < 8) {
+          }
+           if (password.length < 8) {
             setErrorMessage({
                 open:true,
                 message:"Password should be equal or greater than 8 characters."
             });
             return false;
-          } else if (email === "") {
+          }
+           if (email === "") {
             setErrorMessage({
                 open:true,
                 message:"Email is required."
@@ -89,8 +89,20 @@ export default function SignIn() {
                 password
             })
         })    
-        const reponse = await data.json();
-        console.log(reponse);
+
+        if(data.status === 201) {  
+          const reponse = await data.json()
+          localStorage.setItem('app-user', JSON.stringify(reponse.username)); 
+          navigate('/');
+
+        }
+        else {
+          setErrorMessage({
+            open:true,
+            message:"Username already exists."
+          });
+        }
+        console.log(data);
   };
 }
 
@@ -100,6 +112,13 @@ export default function SignIn() {
     }
     setErrorMessage({...errorMessage, open: false});
   };
+
+  useEffect(() => {
+    if (localStorage.getItem('app-user')) {
+      navigate('/');
+    }
+  }
+  , [navigate])
 
   return (
     <ThemeProvider theme={theme}>
@@ -117,7 +136,7 @@ export default function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Register
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
@@ -199,9 +218,6 @@ export default function SignIn() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
               </Grid>
               <Grid item>
                 <Link href="/login" variant="body2">
