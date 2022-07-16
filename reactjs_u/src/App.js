@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
+import Topbar from "./components/topbar/Topbar";
 import Chat from "./pages/Chat";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -10,6 +11,7 @@ import Register from "./pages/Register";
 function App() {
   return (
     <BrowserRouter>
+      <Topbar/>
       <nav>
         <ul>
           <li>
@@ -32,6 +34,7 @@ function App() {
         <Route exact path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
+
   );
 }
 
