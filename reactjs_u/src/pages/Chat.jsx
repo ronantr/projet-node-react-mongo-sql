@@ -6,19 +6,34 @@ import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import List from '@mui/material/List';
-import Fab from '@mui/material/Fab';
-import SendIcon from '@mui/icons-material/Send';
-import ChatList from '../components/chat/ChatList';
-import MessageItem from '../components/chat/MessageItem';
+import Contacts from '../components/chat/Contacts';
+import { getAllUsersRoute } from '../utils/ApiRoutes';
+import Welcome from '../components/chat/Welcome';
+import ChatBox from '../components/chat/ChatBox';
 const classes = {
+
+    container: {
+        height:"100vh",
+        width:"100vw",
+        display:"flex",
+        flexDirection:"column",
+        justifyContent:"center",
+        gap:"1rem",
+        alignItems:"center",
+        backgroundColor:"#131324"},
+    paper:{
+        height: "85vh",
+        width: "85vw",
+        backgroundColor: "#00000076", 
+        display: "grid",
+    },
   table: {
     minWidth: 650,
+    width: "100%",
+    margin:"0 auto",
+    justifyContent:"center",
   },
-  chatSection: {
-    width: '100%',
-    height: '80vh'
-  },
+
   headBG: {
       backgroundColor: '#e0e0e0'
   },
@@ -133,65 +148,77 @@ const dataChats= [
 ]
 
 const Chat = () => {
-//   const classes = useStyles();
-const [currentUser, setCurrentUser] = React.useState( {
-    id: "user-1",
-name: 'John Doe',   
-avatar: 'https://i.pravatar.cc/100',
-});
+const [currentUser, setCurrentUser] = React.useState(null);
+const [contacts, setContacts] = React.useState([]);
+const [currentChat, setCurrentChat] = React.useState(null);
 
-const [chat, setChat] = React.useState(dataChats[0]);
 
-const handleChangeChat = (chat) => {
+useEffect(() => {
+
+    // let user=null;
+    // const getCurrentFromLocalStorage = async () => {
+    //    user= await JSON.parse(localStorage.getItem('app-user'))
+    // }
+    let user = null;
+    user= JSON.parse(localStorage.getItem('app-user'))
+    setCurrentUser(
+        user
+     );
+}, []);
+
+useEffect(() => {
+    async function fetchDataJson() {
+        let contacts = null
+        await fetch(`${getAllUsersRoute}/${currentUser._id}`)
+            .then(res => res.json())
+            .then(data => {
+             contacts=data
+        })
+        return contacts
+      }
+      if( currentUser !== null){
+        fetchDataJson().then(data => {
+            setContacts(data)
+        })
+    }
+
+
+}, [currentUser]);
+
+// const [chat, setChat] = React.useState(dataChats[0]);
+
+const handleChatChange = (chat) => {
     console.log(chat.messages);
-    setChat(chat);
+    // setChat(chat);
+    setCurrentChat(chat);
 }
 
   return (
-      <div>
-        <Grid container>
+    <div style={classes.container}>
+                <Grid container>
             <Grid item xs={12} >
-                <Typography variant="h5" className="header-message">Chat</Typography>
+                <Typography variant="h5" sx={{textAlign:"center",color:"#fff"}} className="header-message">Chat</Typography>
             </Grid>
         </Grid>
-        <Grid container component={Paper} style={classes.chatSection}>
+      <Paper style={classes.paper}>
+        <Grid container component={Paper} sx={{justifyContent:"center",margin:"0 auto",width:"100%"}}>
             <Grid item xs={3} style={classes.borderRight500}>
                 
                 <Grid item xs={12} style={{padding: '10px'}}>
                     <TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth />
                 </Grid>
                 <Divider />
-                <List>
-                    {dataChats.map(chat => 
-                        (chat.participants.map(participant => {
-                            if(participant.id !== currentUser.id){
-                                return (
-                                    <ChatList key={participant.id} handleChangeChat={handleChangeChat} chat={chat} participant={participant} />
-                                )
-                            }
-                            return null
-                        })
-                        )
-                    )}
-                </List>
+                <Contacts contacts={contacts} onChatChange={handleChatChange} />
             </Grid>
             <Grid item xs={9}>
-                <List style={classes.messageArea}>
-                    {chat.messages.map(message => (
-                            <MessageItem key={message.id} message={message} currentUser={currentUser} />
-                    ))}
-                </List>
-                <Divider />
-                <Grid container style={{padding: '20px'}}>
-                    <Grid item xs={11}>
-                        <TextField id="outlined-basic-email" label="Type Something" fullWidth />
-                    </Grid>
-                    <Grid item xs={1} align="right">
-                        <Fab color="primary" aria-label="add"><SendIcon /></Fab>
-                    </Grid>
-                </Grid>
+                {currentChat === null ? (
+                   <Welcome />
+                ) : (
+                    <ChatBox chat={currentChat}/>
+                )}
             </Grid>
         </Grid>
+      </Paper>
       </div>
   );
 }

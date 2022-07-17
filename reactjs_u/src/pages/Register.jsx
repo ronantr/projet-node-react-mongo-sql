@@ -25,8 +25,8 @@ export default function SignIn() {
         message: ''
     })
     const [values, setValues] = useState({
-        firstName: '',
-        lastName: '',
+        firstname: '',
+        lastname: '',
         username: "",
         email: "",
         password: "",
@@ -39,7 +39,7 @@ export default function SignIn() {
     };
 
     const handleValidate = () => {
-        const { firstName, lastName, username, email, password, confirmPassword } = values;
+        const { firstname, lastname, username, email, password, confirmPassword } = values;
         if (password !== confirmPassword) {
             setErrorMessage({
                 open:true,
@@ -75,15 +75,15 @@ export default function SignIn() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if(handleValidate()) {
-        const { firstName, lastName, username, email, password } = values;
+        const { firstname, lastname, username, email, password } = values;
         const data = await fetch(registerRoute, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                firstName,
-                lastName,
+                firstname,
+                lastname,
                 username,
                 email,
                 password
@@ -91,8 +91,9 @@ export default function SignIn() {
         })    
 
         if(data.status === 201) {  
-          const reponse = await data.json()
-          localStorage.setItem('app-user', JSON.stringify(reponse.username)); 
+          const user = await data.json()
+          console.log(user);
+          localStorage.setItem('app-user', JSON.stringify(user)); 
           navigate('/');
 
         }
@@ -102,7 +103,6 @@ export default function SignIn() {
             message:"Username already exists."
           });
         }
-        console.log(data);
   };
 }
 
@@ -144,9 +144,9 @@ export default function SignIn() {
                 required
                 fullWidth
                 autoComplete="fname"
-                name="firstName"
+                name="firstname"
                 variant="outlined"
-                id="firstName"
+                id="firstname"
                 label="First Name"
                 autoFocus
                 onChange={(e) => handleChange(e)}
@@ -155,9 +155,9 @@ export default function SignIn() {
                 margin="normal"
                 required
                 fullWidth
-                id="lastName"
+                id="lastname"
                 label="Last Name"
-                name="lastName"
+                name="lastname"
                 autoComplete="lname"
                 onChange={(e) => handleChange(e)}
 

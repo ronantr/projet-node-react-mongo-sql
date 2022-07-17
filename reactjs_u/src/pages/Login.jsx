@@ -70,19 +70,20 @@ export default function SignIn() {
                 password
             })
         })    
-        const reponse = await data.json()
+        const response = await data.json()
         if(data.status === 200) {  
-          localStorage.setItem('app-user', JSON.stringify(reponse.username)); 
+          console.log(response);
+          localStorage.setItem('app-user', JSON.stringify(response.user)); 
           navigate('/');
 
         }
         else {
           setErrorMessage({
             open:true,
-            message:reponse.message
+            message:response.message
           });
         }
-        console.log(reponse.message);
+        console.log(response.message);
   };
 }
 
