@@ -1,9 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import "./App.css";
 import Topbar from "./components/topbar/Topbar";
 import Chat from "./pages/Chat";
-import Home from "./pages/Home";
+import Home from "./pages/home/Home";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
