@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const mysql = require("mysql");
 const cors = require("cors");
 const authRoutes = require("./routes/auth");
+const messagesRoutes = require("./routes/auth");
 require("dotenv").config();
 
 // USE THIS BECAUSE of based of name we gave the database
@@ -35,3 +36,4 @@ const server = app.listen(process.env.PORT, () => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/messages", messagesRoutes);

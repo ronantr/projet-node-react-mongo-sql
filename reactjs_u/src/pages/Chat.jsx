@@ -214,7 +214,7 @@ const handleChatChange = (chat) => {
                 {currentChat === null ? (
                    <Welcome />
                 ) : (
-                    <ChatBox chat={currentChat}/>
+                    <ChatBox chat={currentChat} currentUser={currentUser}/>
                 )}
             </Grid>
         </Grid>
