@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js"
@@ -14,6 +15,9 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.17.1",
+    "joi": "^17.6.0",
+    "joi-password-complexity": "^5.1.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.9",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.19",

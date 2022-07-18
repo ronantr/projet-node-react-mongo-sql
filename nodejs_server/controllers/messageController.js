@@ -1,6 +1,5 @@
-const Messages = require("../models/message");
-
-module.exports.getAllMessages = async (req, res, next) => {
+import Messages from "../models/Message.js";
+const getAllMessages = async (req, res, next) => {
   try {
     const { from, to } = req.body;
 
@@ -22,7 +21,7 @@ module.exports.getAllMessages = async (req, res, next) => {
   }
 };
 
-module.exports.addMessage = async (req, res, next) => {
+const addMessage = async (req, res, next) => {
   try {
     const { from, to, message } = req.body;
     const data = await Messages.create({
@@ -37,3 +36,5 @@ module.exports.addMessage = async (req, res, next) => {
     next(ex);
   }
 };
+
+export { getAllMessages, addMessage };

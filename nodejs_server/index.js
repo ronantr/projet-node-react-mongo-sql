@@ -1,11 +1,14 @@
-const express = require("express");
+import express from "express";
+import mongoose from "mongoose";
+import mysql from "mysql";
+import cors from "cors";
+import refreshTokenRoutes from "./routes/refreshToken.js";
+import { config } from "dotenv";
+import authRoutes from "./routes/auth.js";
+import messagesRoutes from "./routes/messages.js";
+
 const app = express();
-const mongoose = require("mongoose");
-const mysql = require("mysql");
-const cors = require("cors");
-const authRoutes = require("./routes/auth");
-const messagesRoutes = require("./routes/auth");
-require("dotenv").config();
+config();
 
 // USE THIS BECAUSE of based of name we gave the database
 mongoose
@@ -36,4 +39,5 @@ const server = app.listen(process.env.PORT, () => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/refreshToken", refreshTokenRoutes);
 app.use("/api/messages", messagesRoutes);

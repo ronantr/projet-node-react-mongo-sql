@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+
 const Schema = mongoose.Schema({
   firstname: {
     type: String,
@@ -25,6 +26,12 @@ const Schema = mongoose.Schema({
     required: true,
     min: 8,
   },
+  roles: {
+    type: [String],
+    enum: ["user", "admin"],
+    default: ["user"],
+  },
 });
 
-module.exports = mongoose.model("User", Schema);
+const User = mongoose.model("User", Schema);
+export default User;

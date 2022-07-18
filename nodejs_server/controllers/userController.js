@@ -1,8 +1,15 @@
-const User = require("../model/user");
-const bcrypt = require("bcrypt");
+import User from "../models/User.js";
+import bcrypt from "bcrypt";
+import generateTokens from "../utils/generateToken.js";
 
-module.exports.register = async (req, res, next) => {
+const register = async (req, res, next) => {
   try {
+    // const { error } = signUpBodyValidation(req.body);
+    // if (error)
+    //   return res
+    //     .status(400)
+    //     .json({ error: true, message: error.details[0].message });
+
     const { firstname, lastname, username, email, password } = req.body;
     const usernameCheck = await User.findOne({ username: username });
     if (usernameCheck) {
@@ -19,7 +26,8 @@ module.exports.register = async (req, res, next) => {
       });
     }
 
-    const salt = await bcrypt.genSalt(10);
+    // const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(Number(process.env.SALT));
     const hashedPassword = await bcrypt.hash(password, salt);
     const user = await User.create({
       firstname,
@@ -49,33 +57,35 @@ module.exports.register = async (req, res, next) => {
   }
 };
 
-module.exports.login = async (req, res, next) => {
+const login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
     console.log("---USER", user);
     if (!user) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Incorrect username or password",
       });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Incorrect username or password",
       });
     }
+
+    const { accessToken, refreshToken } = await generateTokens(user);
     delete user.password;
     console.log("---SUCCESS", user);
 
-    return res.status(200).json(user);
+    return res.status(200).json({ user, accessToken, refreshToken });
   } catch (err) {
     res.status(500).json(err);
   }
 };
 
-module.exports.getAllUsers = async (req, res, next) => {
+const getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find({ _id: { $ne: req.params.id } }).select({
       email: 1,
@@ -88,3 +98,5 @@ module.exports.getAllUsers = async (req, res, next) => {
     res.status(500).json(err);
   }
 };
+
+export { register, login, getAllUsers };
