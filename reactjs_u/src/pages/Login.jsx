@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -16,11 +14,13 @@ import { Alert, Snackbar } from "@mui/material";
 import { loginRoute } from "../utils/ApiRoutes";
 
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/Auth";
 
 const theme = createTheme();
 
 export default function SignIn() {
   let navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const [errorMessage, setErrorMessage] = useState({
     open: false,
@@ -59,35 +59,37 @@ export default function SignIn() {
     event.preventDefault();
     if (handleValidate()) {
       const { username, password } = values;
-      const data = await fetch(loginRoute, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
-      const response = await data.json();
-      if (data.status === 200) {
-        console.log(response);
-        localStorage.setItem("app-user", JSON.stringify(response.user));
-        localStorage.setItem(
-          "app-user-token",
-          JSON.stringify({
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken,
-          })
-        );
-        navigate("/");
-      } else {
-        setErrorMessage({
-          open: true,
-          message: response.message,
-        });
-      }
-      console.log(response.message);
+      login(username, password);
+      // const { username, password } = values;
+      // const data = await fetch(loginRoute, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     username,
+      //     password,
+      //   }),
+      // });
+      // const response = await data.json();
+      // if (data.status === 200) {
+      //   console.log(response);
+      //   localStorage.setItem("app-user", JSON.stringify(response.user));
+      //   localStorage.setItem(
+      //     "app-user-token",
+      //     JSON.stringify({
+      //       accessToken: response.accessToken,
+      //       refreshToken: response.refreshToken,
+      //     })
+      //   );
+      //   navigate("/login");
+      // } else {
+      //   setErrorMessage({
+      //     open: true,
+      //     message: response.message,
+      //   });
+      // }
+      // console.log(response.message);
     }
   };
 
@@ -100,7 +102,7 @@ export default function SignIn() {
 
   useEffect(() => {
     if (localStorage.getItem("app-user")) {
-      navigate("/");
+      navigate("/login");
     }
   }, [navigate]);
 
