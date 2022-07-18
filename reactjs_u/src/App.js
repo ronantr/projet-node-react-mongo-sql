@@ -4,7 +4,7 @@ import Topbar from "./components/topbar/Topbar";
 import Chat from "./pages/Chat";
 import Home from "./pages/home/Home";
 import Login from "./pages/Login";
-import Profile from "./pages/Profile";
+import Profile from "./pages/profile/Profile";
 import Register from "./pages/Register";
 
 function App() {
