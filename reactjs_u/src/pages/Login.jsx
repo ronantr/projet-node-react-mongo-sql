@@ -1,106 +1,108 @@
-import React, { useEffect, useState } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Alert, Snackbar } from '@mui/material';
-import { loginRoute } from '../utils/ApiRoutes';
+import React, { useEffect, useState } from "react";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Alert, Snackbar } from "@mui/material";
+import { loginRoute } from "../utils/ApiRoutes";
 
 import { useNavigate } from "react-router-dom";
 
 const theme = createTheme();
 
 export default function SignIn() {
-  let navigate= useNavigate();
+  let navigate = useNavigate();
 
-    const [errorMessage, setErrorMessage] = useState({
-        open: false,
-        message: ''
-    })
-    const [values, setValues] = useState({
-        username: "",
-        password: "",
-      });
+  const [errorMessage, setErrorMessage] = useState({
+    open: false,
+    message: "",
+  });
+  const [values, setValues] = useState({
+    username: "",
+    password: "",
+  });
 
-
-    const handleChange = (event) => {
+  const handleChange = (event) => {
     setValues({ ...values, [event.target.name]: event.target.value });
-    };
+  };
 
-    const handleValidate = () => {
-        const { username, password } = values;
+  const handleValidate = () => {
+    const { username, password } = values;
 
-        if (username.length === "") {
-            setErrorMessage({
-                open:true,
-                message:"Username is required."
-            });
-          }
-          if (password === "") {
-            setErrorMessage({
-                open:true,
-                message:"password is required."
-            });
-            return false;
-          }
-      
-          return true;
+    if (username.length === "") {
+      setErrorMessage({
+        open: true,
+        message: "Username is required.",
+      });
     }
+    if (password === "") {
+      setErrorMessage({
+        open: true,
+        message: "password is required.",
+      });
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if(handleValidate()) {
-        const {username, password } = values;
-        const data = await fetch(loginRoute, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username,
-                password
-            })
-        })    
-        const response = await data.json()
-        if(data.status === 200) {  
-          console.log(response);
-          localStorage.setItem('app-user', JSON.stringify(response.user)); 
-          navigate('/');
-
-        }
-        else {
-          setErrorMessage({
-            open:true,
-            message:response.message
-          });
-        }
-        console.log(response.message);
+    if (handleValidate()) {
+      const { username, password } = values;
+      const data = await fetch(loginRoute, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+      const response = await data.json();
+      if (data.status === 200) {
+        console.log(response);
+        localStorage.setItem("app-user", JSON.stringify(response.user));
+        localStorage.setItem(
+          "app-user-token",
+          JSON.stringify({
+            accessToken: response.accessToken,
+            refreshToken: response.refreshToken,
+          })
+        );
+        navigate("/");
+      } else {
+        setErrorMessage({
+          open: true,
+          message: response.message,
+        });
+      }
+      console.log(response.message);
+    }
   };
-}
 
   const handleErrorMessageClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
-    setErrorMessage({...errorMessage, open: false});
+    setErrorMessage({ ...errorMessage, open: false });
   };
 
   useEffect(() => {
-    if (localStorage.getItem('app-user')) {
-      navigate('/');
+    if (localStorage.getItem("app-user")) {
+      navigate("/");
     }
-  }
-  , [navigate])
-  
+  }, [navigate]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -109,19 +111,24 @@ export default function SignIn() {
         <Box
           sx={{
             marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Log in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-             <TextField
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
+            <TextField
               margin="normal"
               required
               fullWidth
@@ -130,7 +137,6 @@ export default function SignIn() {
               name="username"
               autoComplete="username"
               onChange={(e) => handleChange(e)}
-
             />
             <TextField
               margin="normal"
@@ -159,20 +165,28 @@ export default function SignIn() {
                 </Link>
               </Grid>
               <Grid item>
-              <Link href="/register" variant="body2">
+                <Link href="/register" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
             </Grid>
           </Box>
 
-          {errorMessage &&  <Snackbar open={errorMessage.open} autoHideDuration={10000} onClose={handleErrorMessageClose}>
-            <Alert onClose={handleErrorMessageClose} severity="error" sx={{ width: '100%' }}>
-            {errorMessage.message}
-            </Alert>
-      </Snackbar>
-      }
-
+          {errorMessage && (
+            <Snackbar
+              open={errorMessage.open}
+              autoHideDuration={10000}
+              onClose={handleErrorMessageClose}
+            >
+              <Alert
+                onClose={handleErrorMessageClose}
+                severity="error"
+                sx={{ width: "100%" }}
+              >
+                {errorMessage.message}
+              </Alert>
+            </Snackbar>
+          )}
         </Box>
       </Container>
     </ThemeProvider>

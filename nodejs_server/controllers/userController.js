@@ -38,7 +38,7 @@ const register = async (req, res, next) => {
     });
 
     delete user.password;
-    console.log("---SUCCESS", user);
+    console.log("---SUCCESS", json(user));
 
     return res.status(201).json(user);
   } catch (err) {
@@ -74,9 +74,10 @@ const login = async (req, res, next) => {
         message: "Incorrect username or password",
       });
     }
-
-    const { accessToken, refreshToken } = await generateTokens(user);
+    user.password = undefined;
     delete user.password;
+    const { accessToken, refreshToken } = await generateTokens(user);
+    console.log(accessToken, refreshToken);
     console.log("---SUCCESS", user);
 
     return res.status(200).json({ user, accessToken, refreshToken });
