@@ -2,6 +2,7 @@ import {
   Avatar,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
@@ -21,10 +22,10 @@ export default function Contacts({ contacts, onChatChange }) {
     <List>
       {contacts.map((contact, index) => {
         return (
-          <ListItem
+          <ListItemButton
             key={contact._id}
             onClick={() => handleChatChange(index, contact)}
-            className={currentSelected ? "selected" : ""}
+            selected={currentSelected === index}
             sx={{ "&:hover": { cursor: "pointer" } }}
           >
             <ListItemIcon>
@@ -35,7 +36,7 @@ export default function Contacts({ contacts, onChatChange }) {
               />
             </ListItemIcon>
             <ListItemText primary={contact.username} />
-          </ListItem>
+          </ListItemButton>
         );
       })}
     </List>
