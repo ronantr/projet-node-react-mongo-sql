@@ -79,8 +79,6 @@ const Chat = () => {
   }, [user]);
 
   const handleChatChange = (chat) => {
-    console.log(chat.messages);
-    // setChat(chat);
     setCurrentChat(chat);
   };
 
@@ -118,11 +116,7 @@ const Chat = () => {
             )}
           </Grid>
           <Grid item xs={9}>
-            {currentChat === null ? (
-              <Welcome />
-            ) : (
-              <ChatBox chat={currentChat} currentUser={user} />
-            )}
+            {!currentChat ? <Welcome /> : <ChatBox currentChat={currentChat} />}
           </Grid>
         </Grid>
       </Paper>

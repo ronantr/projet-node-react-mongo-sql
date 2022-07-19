@@ -15,6 +15,7 @@ const getAllMessages = async (req, res, next) => {
         message: msg.message.text,
       };
     });
+    console.log(projectedMessages);
     res.json(projectedMessages);
   } catch (ex) {
     next(ex);
@@ -30,8 +31,11 @@ const addMessage = async (req, res, next) => {
       sender: from,
     });
 
-    if (data) return res.json({ msg: "Message added successfully." });
-    else return res.json({ msg: "Failed to add message to the database" });
+    if (data) return res.status(201).json(data);
+    else
+      return res
+        .status(500)
+        .json({ msg: "Failed to add message to the database" });
   } catch (ex) {
     next(ex);
   }

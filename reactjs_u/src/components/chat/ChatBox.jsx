@@ -1,66 +1,79 @@
-import { Divider, Fab, Grid, List, TextField } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-import MessageItem from './MessageItem'
-import ChatInput from './ChatInput';
-import { getAllMessagesRoute, sendMessageRoute } from '../../utils/ApiRoutes';
+import { Divider, Fab, Grid, List, TextField } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import MessageItem from "./MessageItem";
+import ChatInput from "./ChatInput";
+import { getAllMessagesRoute, sendMessageRoute } from "../../utils/ApiRoutes";
+import axios from "axios";
+import { AuthContext } from "../../context/Auth";
 
 const classes = {
   messageArea: {
-    height: '70vh',
-    overflowY: 'auto'
-  }
+    height: "70vh",
+    overflowY: "auto",
+  },
 };
 
-export default function ChatBox({currentChat,currentUser}) {
-    const [messages, setMessages] = useState([]);
+export default function ChatBox({ currentChat }) {
+  const { token, user } = useContext(AuthContext);
 
-    const handleSendMessage = async(msg) => {
-        const data = await fetch(sendMessageRoute, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                from:currentUser._id,
-                to:currentChat._id,
-                message:msg
-            })
-        })   
-        
-        const msgs = [...messages];
-        msgs.push({ fromSelf: true, message: msg });
-        setMessages(msgs);
-    }
+  const [messages, setMessages] = useState([]);
 
-    useEffect( () => {
+  const handleSendMessage = async (msg) => {
+    await axios.post(
+      sendMessageRoute,
+      {
+        from: user._id,
+        to: currentChat._id,
+        message: msg,
+      },
+      {
+        headers: {
+          Authorization: `token ${token}`,
+        },
+      }
+    );
 
-     const fetchAllMessages = async () => {
-         let messages = null
-        await fetch(getAllMessagesRoute)
-            .then(res => res.json())
-            .then(data => {
-             messages=data
-        })
-        return messages
-    }
-    fetchAllMessages().then(data => {
-        setMessages(data)
-    })
+    const msgs = [...messages];
+    msgs.push({ fromSelf: true, message: msg });
+    console.log(msg, msgs);
+    setMessages(msgs);
+  };
 
-})
+  useEffect(() => {
+    const getMessages = async () => {
+      const messages = await axios.post(
+        getAllMessagesRoute,
+        {
+          from: user._id,
+          to: currentChat._id,
+        },
+        {
+          headers: {
+            Authorization: `token ${token}`,
+          },
+        }
+      );
+      return messages.data;
+    };
+
+    getMessages().then((res) => {
+      console.log(res);
+      setMessages(res);
+    });
+  }, [setMessages, currentChat, user, token]);
 
   return (
     <>
-    <List style={classes.messageArea}>
-                    {messages.map(message => (
-                            <MessageItem key={message.id} message={message} />
-                    ))}
-                </List>
+      <List style={classes.messageArea}>
+        {messages.length > 0 &&
+          messages.map((message, index) => (
+            <MessageItem key={index} message={message} />
+          ))}
+      </List>
 
-                <Divider />
-                
-            <ChatInput handleSendMessage={handleSendMessage} />
-        </>
+      <Divider />
 
-  )
+      <ChatInput handleSendMessage={handleSendMessage} />
+    </>
+  );
 }
