@@ -13,57 +13,50 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import { AuthContext } from "./context/Auth";
+import ProtectedRoute from "./components/PrivateRoute";
 function App() {
-  const { token, logout } = useContext(AuthContext);
+  const { isLoading, token, logout, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("fdfsgdfgfdgd");
-    console.log("---", token);
-    if (!token) {
-      navigate("/login");
-    }
-  }, [token, navigate]);
+    console.log("token : ", token);
+  }, [token, user]);
 
   return (
     <>
-      {!token ? (
-        <Routes>
-          <Route path="/register" element={<Register />} />
-          <Route exact path="/login" element={<Login />} />
-        </Routes>
-      ) : (
-        <>
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/profile">Profile</Link>
-              </li>
-              <li>
-                <Link to="/chat">Chat</Link>
-              </li>
-
-              {token && (
-                <li>
-                  {" "}
-                  <button onClick={logout}>logout</button>{" "}
-                </li>
-              )}
-            </ul>
-          </nav>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/register" element={<Register />} />
-            <Route exact path="/login" element={<Login />} />
-          </Routes>
-        </>
+      {token && (
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/profile">Profile</Link>
+            </li>
+            <li>
+              <Link to="/chat">Chat</Link>
+            </li>
+            <li>
+              <button onClick={logout}>logout</button>
+            </li>
+          </ul>
+        </nav>
       )}
+
+      <Routes>
+        <Route path="/register" element={<Register />} />
+        <Route exact path="/login" element={<Login />} />
+        <Route
+          element={
+            <ProtectedRoute isAuthLoading={isLoading} isAllowed={!!user} />
+          }
+        >
+          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/chat" element={<Chat />} />
+        </Route>
+      </Routes>
     </>
   );
 }

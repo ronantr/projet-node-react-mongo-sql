@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import { loginRoute } from "../utils/ApiRoutes";
 import { useNavigate } from "react-router-dom";
 const AuthContext = createContext(null);
@@ -6,23 +6,32 @@ const AuthContext = createContext(null);
 const AuthProvider = (props) => {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem("app-user")) || null
+  );
+  const [token, setToken] = useState(
+    JSON.parse(localStorage.getItem("app-user-token")) || null
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const login = (username, password) => {
+  const login = async (username, password) => {
+    console.log(token);
     if (!token) {
       setIsLoading(true);
       setError(null);
-      loginRequest(username, password);
+      await loginRequest(username, password);
+      setIsLoading(false);
     }
     navigate("/");
   };
 
   const logout = () => {
+    console.log("logout");
     setError(null);
     setUser(null);
+    localStorage.removeItem("app-user-token");
+    localStorage.removeItem("app-user");
     setIsLoading(false);
   };
 
@@ -38,7 +47,6 @@ const AuthProvider = (props) => {
       }),
     });
     const response = await data.json();
-    console.log(data);
     if (data.status === 200) {
       // console.log(response);
       localStorage.setItem("app-user", JSON.stringify(response.user));
@@ -57,6 +65,14 @@ const AuthProvider = (props) => {
     }
   };
 
+  // useEffect(() => {
+  //   const user = localStorage.getItem("app-user");
+  //   const token = localStorage.getItem("app-user-token");
+  //   if (user && token) {
+  //     setUser(JSON.parse(user));
+  //     setToken(JSON.parse(token).accessToken);
+  //   }
+  // }, []);
   return (
     <AuthContext.Provider
       value={{

@@ -20,7 +20,7 @@ const theme = createTheme();
 
 export default function SignIn() {
   let navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { user, isLoading, error, login } = useContext(AuthContext);
 
   const [errorMessage, setErrorMessage] = useState({
     open: false,
@@ -59,7 +59,11 @@ export default function SignIn() {
     event.preventDefault();
     if (handleValidate()) {
       const { username, password } = values;
-      login(username, password);
+      await login(username, password);
+      // if (error) {
+      //   console.log("error", error);
+
+      // }
       // const { username, password } = values;
       // const data = await fetch(loginRoute, {
       //   method: "POST",
@@ -101,10 +105,13 @@ export default function SignIn() {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("app-user")) {
-      navigate("/login");
+    if (error) {
+      setErrorMessage({
+        open: true,
+        message: error,
+      });
     }
-  }, [navigate]);
+  }, [error]);
 
   return (
     <ThemeProvider theme={theme}>
