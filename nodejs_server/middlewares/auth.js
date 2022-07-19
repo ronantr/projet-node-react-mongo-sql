@@ -2,7 +2,10 @@ import jwt from "jsonwebtoken";
 
 const auth = async (req, res, next) => {
   //get the token from the header if present
-  const token = req.headers["x-access-token"] || req.headers["authorization"];
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  console.log(JSON.stringify(token));
+  process.exit();
   //if no token found, return response (without going to the next middelware)
   if (!token)
     return res
@@ -15,7 +18,7 @@ const auth = async (req, res, next) => {
       process.env.ACCESS_TOKEN_PRIVATE_KEY
     );
     req.user = tokenDetails;
-    consolelog(requeuser);
+    console.log(req.user);
     next();
   } catch (err) {
     console.log(err);
