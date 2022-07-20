@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import axios from "axios";
 
 // import { makeStyles } from '@mui/styles';
@@ -8,10 +8,12 @@ import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Contacts from "../components/chat/Contacts";
-import { getAllUsersRoute } from "../utils/ApiRoutes";
+import { getAllUsersRoute, host } from "../utils/ApiRoutes";
 import Welcome from "../components/chat/Welcome";
 import ChatBox from "../components/chat/ChatBox";
 import { AuthContext } from "../context/Auth";
+import { io } from "socket.io-client";
+import { disconnectSocket } from "../utils/socketioService";
 const classes = {
   container: {
     height: "100vh",
@@ -53,6 +55,8 @@ const Chat = () => {
   const [currentChat, setCurrentChat] = React.useState(null);
   const { token, user } = useContext(AuthContext);
 
+  const socket = useRef();
+
   useEffect(() => {
     async function fetchDataJson() {
       let contacts = null;
@@ -78,6 +82,16 @@ const Chat = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (user !== null) {
+      socket.current = io(host);
+      console.log(socket.current);
+      socket.current.emit("add-user", user._id);
+    }
+    return () => {
+      disconnectSocket();
+    };
+  }, [user]);
   const handleChatChange = (chat) => {
     setCurrentChat(chat);
   };
@@ -116,7 +130,11 @@ const Chat = () => {
             )}
           </Grid>
           <Grid item xs={9}>
-            {!currentChat ? <Welcome /> : <ChatBox currentChat={currentChat} />}
+            {!currentChat ? (
+              <Welcome />
+            ) : (
+              <ChatBox currentChat={currentChat} socket={socket} />
+            )}
           </Grid>
         </Grid>
       </Paper>

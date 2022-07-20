@@ -6,7 +6,7 @@ import {
   List,
   TextField,
 } from "@mui/material";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import MessageItem from "./MessageItem";
 import ChatInput from "./ChatInput";
 import { getAllMessagesRoute, sendMessageRoute } from "../../utils/ApiRoutes";
@@ -21,7 +21,9 @@ const classes = {
   },
 };
 
-export default function ChatBox({ currentChat }) {
+export default function ChatBox({ currentChat, socket }) {
+  const [arrivalMessage, setArrivalMessage] = useState(null);
+  const scrollRef = useRef();
   const { token, user } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,16 +43,18 @@ export default function ChatBox({ currentChat }) {
         },
       }
     );
+    socket.current.emit("send-msg", {
+      from: user._id,
+      to: currentChat._id,
+      message: msg,
+    });
 
     const msgs = [...messages];
     msgs.push({ fromSelf: true, message: msg });
-    console.log(msg, msgs);
     setMessages(msgs);
   };
 
   useEffect(() => {
-    setIsLoading(true);
-
     const getMessages = async () => {
       const messages = await axios.post(
         getAllMessagesRoute,
@@ -74,6 +78,22 @@ export default function ChatBox({ currentChat }) {
     });
   }, [setMessages, currentChat, user, token]);
 
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on("receive-msg", (msg) => {
+        setArrivalMessage({ fromSelf: false, message: msg });
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
+    console.log(arrivalMessage);
+  }, [arrivalMessage]);
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
   return (
     <>
       {isLoading ? (

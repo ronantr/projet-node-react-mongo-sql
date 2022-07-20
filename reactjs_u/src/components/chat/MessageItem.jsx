@@ -2,9 +2,6 @@ import { Grid, ListItem, ListItemText } from "@mui/material";
 import React, { useEffect } from "react";
 
 export default function MessageItem({ message }) {
-  useEffect(() => {
-    console.log("msg", message.message);
-  }, []);
   return (
     <ListItem>
       <Grid container>
