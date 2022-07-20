@@ -36,9 +36,9 @@ const register = async (req, res, next) => {
       email,
       password: hashedPassword,
     });
-
+    user.password = undefined;
     delete user.password;
-    console.log("---SUCCESS", json(user));
+    console.log("---SUCCESS", JSON.stringify(user));
 
     return res.status(201).json(user);
   } catch (err) {

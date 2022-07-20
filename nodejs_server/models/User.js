@@ -31,6 +31,12 @@ const Schema = mongoose.Schema({
     enum: ["user", "admin"],
     default: ["user"],
   },
+  friends: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Friend",
+    },
+  ],
 });
 
 const User = mongoose.model("User", Schema);

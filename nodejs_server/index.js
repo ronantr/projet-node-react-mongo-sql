@@ -6,6 +6,7 @@ import refreshTokenRoutes from "./routes/refreshToken.js";
 import { config } from "dotenv";
 import authRoutes from "./routes/auth.js";
 import messagesRoutes from "./routes/messages.js";
+import friendsRoutes from "./routes/friends.js";
 
 const app = express();
 config();
@@ -15,6 +16,7 @@ mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   })
   .then(() => {
     console.log("DB Connetion Successfull");
@@ -41,3 +43,4 @@ const server = app.listen(process.env.PORT, () => {
 app.use("/api/auth", authRoutes);
 app.use("/api/refreshToken", refreshTokenRoutes);
 app.use("/api/messages", messagesRoutes);
+app.use("/api/friend", friendsRoutes);
