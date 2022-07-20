@@ -1,14 +1,22 @@
-const express = require("express");
+import express from "express";
+import mongoose from "mongoose";
+import mysql from "mysql";
+import cors from "cors";
+import refreshTokenRoutes from "./routes/refreshToken.js";
+import { config } from "dotenv";
+import authRoutes from "./routes/auth.js";
+import messagesRoutes from "./routes/messages.js";
+import friendsRoutes from "./routes/friends.js";
+
 const app = express();
-const mongoose = require("mongoose");
-const mysql = require("mysql");
-const cors = require("cors");
-require("dotenv").config();
+config();
+
 // USE THIS BECAUSE of based of name we gave the database
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   })
   .then(() => {
     console.log("DB Connetion Successfull");
@@ -31,3 +39,8 @@ app.use(express.json());
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
+
+app.use("/api/auth", authRoutes);
+app.use("/api/refreshToken", refreshTokenRoutes);
+app.use("/api/messages", messagesRoutes);
+app.use("/api/friend", friendsRoutes);
