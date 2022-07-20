@@ -13,6 +13,7 @@ const getAllMessages = async (req, res, next) => {
       return {
         fromSelf: msg.sender.toString() === from,
         message: msg.message.text,
+        createdAt: msg.createdAt,
       };
     });
     console.log(projectedMessages);

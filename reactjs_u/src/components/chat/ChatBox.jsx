@@ -1,10 +1,18 @@
-import { Divider, Fab, Grid, List, TextField } from "@mui/material";
+import {
+  CircularProgress,
+  Divider,
+  Fab,
+  Grid,
+  List,
+  TextField,
+} from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import MessageItem from "./MessageItem";
 import ChatInput from "./ChatInput";
 import { getAllMessagesRoute, sendMessageRoute } from "../../utils/ApiRoutes";
 import axios from "axios";
 import { AuthContext } from "../../context/Auth";
+import { Box } from "@mui/system";
 
 const classes = {
   messageArea: {
@@ -15,6 +23,7 @@ const classes = {
 
 export default function ChatBox({ currentChat }) {
   const { token, user } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [messages, setMessages] = useState([]);
 
@@ -40,6 +49,8 @@ export default function ChatBox({ currentChat }) {
   };
 
   useEffect(() => {
+    setIsLoading(true);
+
     const getMessages = async () => {
       const messages = await axios.post(
         getAllMessagesRoute,
@@ -57,23 +68,31 @@ export default function ChatBox({ currentChat }) {
     };
 
     getMessages().then((res) => {
-      console.log(res);
+      setIsLoading(false);
+
       setMessages(res);
     });
   }, [setMessages, currentChat, user, token]);
 
   return (
     <>
-      <List style={classes.messageArea}>
-        {messages.length > 0 &&
-          messages.map((message, index) => (
-            <MessageItem key={index} message={message} />
-          ))}
-      </List>
+      {isLoading ? (
+        <Box display="flex" alignItems="center" justifyContent="center">
+          <CircularProgress size={100} sx={{ my: "auto" }} />
+        </Box>
+      ) : (
+        <>
+          <List style={classes.messageArea}>
+            {messages.length > 0 &&
+              messages.map((message, index) => (
+                <MessageItem key={index} message={message} />
+              ))}
+          </List>
 
-      <Divider />
-
-      <ChatInput handleSendMessage={handleSendMessage} />
+          <Divider />
+          <ChatInput handleSendMessage={handleSendMessage} />
+        </>
+      )}
     </>
   );
 }

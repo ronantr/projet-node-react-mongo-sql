@@ -19,7 +19,7 @@ export default function MessageItem({ message }) {
           <ListItemText
             // align={message.sender._id === currentUser._id ? "right" : "left"}
             align={message.fromSelf ? "right" : "left"}
-            secondary="09:30"
+            secondary={message.createdAt}
           />
         </Grid>
       </Grid>
