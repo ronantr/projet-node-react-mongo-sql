@@ -7,7 +7,7 @@ import { Router } from "express";
 import auth from "../middlewares/auth.js";
 const router = Router();
 
-router.get("/allusers/:id", auth, getAllUsers);
+router.get("/allusers", auth, getAllUsers);
 router.put("/:id", auth, updateUser);
 router.delete("/:id", auth, deleteUser);
 

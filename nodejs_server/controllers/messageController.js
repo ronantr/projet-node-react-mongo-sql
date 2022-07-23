@@ -1,7 +1,8 @@
 import Messages from "../models/Message.js";
 const getAllMessages = async (req, res, next) => {
   try {
-    const { from, to } = req.body;
+    const from = req.userId;
+    const { to } = req.body;
 
     const messages = await Messages.find({
       users: {
@@ -25,7 +26,8 @@ const getAllMessages = async (req, res, next) => {
 
 const addMessage = async (req, res, next) => {
   try {
-    const { from, to, message } = req.body;
+    const from = req.userId;
+    const { to, message } = req.body;
     const data = await Messages.create({
       message: { text: message },
       users: [from, to],

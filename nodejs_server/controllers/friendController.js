@@ -4,7 +4,8 @@ import User from "../models/User.js";
 const sendFriendRequest = async (req, res) => {
   console.log("test");
   try {
-    const { requesterId, recipientId } = req.body;
+    requesterId = req.userId;
+    const { recipientId } = req.body;
     console.log(
       requesterId,
       "***********************************",
@@ -40,7 +41,9 @@ const sendFriendRequest = async (req, res) => {
 };
 
 const deleteFriend = async (req, res) => {
-  const { requesterId, recipientId } = req.body;
+  requesterId = req.userId;
+
+  const { recipientId } = req.body;
 
   Friend.findOneAndRemove({ requester: requesterId, recipient: recipientId });
   Friend.findOneAndRemove({ recipient: requesterId, requester: recipientId });
@@ -52,7 +55,9 @@ const deleteFriend = async (req, res) => {
 
 const accepteFriendRequest = async (req, res) => {
   try {
-    const { requesterId, recipientId } = req.body;
+    requesterId = req.userId;
+
+    const { recipientId } = req.body;
 
     const docFriend = Friend.findOneAndUpdate(
       { requester: requesterId, recipient: recipientId },
@@ -77,7 +82,8 @@ const accepteFriendRequest = async (req, res) => {
 
 const rejectFriendRequest = async (req, res) => {
   try {
-    const { requesterId, recipientId } = req.body;
+    requesterId = req.userId;
+    const { recipientId } = req.body;
 
     const docFriend = Friend.findOneAndUpdate(
       { requester: requesterId, recipient: recipientId },
@@ -118,7 +124,7 @@ const rejectFriendRequest = async (req, res) => {
 
 const getAllFriends = async (req, res) => {
   try {
-    const userId = req.params.id;
+    userId = req.userId;
     const friends = User.findOne({ _id: userId }).populate("friends", {
       $or: [{ requester: userId }, { requester: userId }],
       status: 3,
