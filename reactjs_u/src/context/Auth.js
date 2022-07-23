@@ -10,7 +10,7 @@ const AuthProvider = (props) => {
     JSON.parse(localStorage.getItem("app-user")) || null
   );
   const [token, setToken] = useState(
-    JSON.parse(localStorage.getItem("app-user-token")) || null
+    JSON.parse(localStorage.getItem("app-user-token")).accessToken || null
   );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
