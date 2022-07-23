@@ -57,7 +57,7 @@ const Chat = () => {
     async function fetchDataJson() {
       let contacts = null;
       return await axios
-        .get(`${getAllUsersRoute}/${user._id}`, {
+        .get(getAllUsersRoute, {
           headers: {
             Authorization: `token ${token}`,
           },

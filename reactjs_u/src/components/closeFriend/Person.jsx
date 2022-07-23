@@ -14,7 +14,6 @@ export default function User({person}) {
       console.log(token)
         try {
           const res = await axios.post(getFriendStatusRoute, {
-            currentUser: user._id,
             user: user._id,
           }, {
             headers: {

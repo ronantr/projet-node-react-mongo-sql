@@ -31,7 +31,6 @@ export default function ChatBox({ currentChat }) {
     await axios.post(
       sendMessageRoute,
       {
-        from: user._id,
         to: currentChat._id,
         message: msg,
       },
@@ -55,7 +54,6 @@ export default function ChatBox({ currentChat }) {
       const messages = await axios.post(
         getAllMessagesRoute,
         {
-          from: user._id,
           to: currentChat._id,
         },
         {

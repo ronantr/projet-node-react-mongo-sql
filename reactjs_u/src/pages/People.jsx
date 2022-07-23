@@ -12,7 +12,7 @@ const People = () => {
   
     const getAllFriends = async () => {
         try {
-          const res = await axios.get(`${getAllUsersRoute}/${user._id}`, {
+          const res = await axios.get(getAllUsersRoute, {
             headers: {
               Authorization: `token ${token}`,
             },
