@@ -15,6 +15,9 @@ import Register from "./pages/Register";
 import { AuthContext } from "./context/Auth";
 import ProtectedRoute from "./components/PrivateRoute";
 import Topbar from "./components/topbar/Topbar";
+import axios from "axios";
+import { getAllUsersRoute } from "./utils/ApiRoutes";
+import People from "./pages/People";
 function App() {
   const { isLoading, token, logout, user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -59,6 +62,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/persons" element={<People />} />
         </Route>
       </Routes>
     </>

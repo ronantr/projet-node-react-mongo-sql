@@ -6,13 +6,15 @@ import {
   accepteFriendRequest,
   rejectFriendRequest,
   getAllFriends,
+  getFriendStatus,
 } from "../controllers/friendController.js";
 const router = Router();
 
 router.post("/send-friend-request", sendFriendRequest);
-router.delete("/delete", auth, deleteFriend);
-router.post("/add", auth, accepteFriendRequest);
-router.post("/reject", auth, rejectFriendRequest);
-router.get("/:id", auth, getAllFriends);
+router.delete("/", auth, deleteFriend);
+router.post("/accept-friend-request", auth, accepteFriendRequest);
+router.post("/reject-friend-request", auth, rejectFriendRequest);
+router.get("all/:id", auth, getAllFriends);
+router.post("/friendStatus", auth, getFriendStatus);
 
 export default router;

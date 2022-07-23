@@ -5,7 +5,6 @@ const auth = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   console.log(JSON.stringify(token));
-  process.exit();
   //if no token found, return response (without going to the next middelware)
   if (!token)
     return res

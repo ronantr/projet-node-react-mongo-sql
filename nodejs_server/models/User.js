@@ -31,7 +31,7 @@ const Schema = mongoose.Schema({
     enum: ["user", "admin"],
     default: ["user"],
   },
-  friends: [
+    friends: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Friend",

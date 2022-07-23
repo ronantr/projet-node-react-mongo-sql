@@ -75,7 +75,29 @@ const accepteFriendRequest = async (req, res) => {
   }
 };
 
-const rejectFriendRequest = (req, res) => {
+const rejectFriendRequest = async (req, res) => {
+  try {
+    const { requesterId, recipientId } = req.body;
+
+    const docFriend = Friend.findOneAndUpdate(
+      { requester: requesterId, recipient: recipientId },
+      { $set: { status: 2 } }
+    );
+    await User.findOneAndUpdate(
+      { _id: { $in: [recipientId] } },
+      { $pull: { friends: docFriend._id } }
+    );
+
+    res.status(200).json({
+      message: "Friend request rejected",
+      friend: recipientId,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
   //   const docA = await Friend.findOneAndRemove(
   //     { requester: requesterId, recipient: recipientId }
   // )
@@ -94,7 +116,54 @@ const rejectFriendRequest = (req, res) => {
   // )
 };
 
-const getAllFriends = (req, res) => {};
+const getAllFriends = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const friends = User.findOne({ _id: userId }).populate("friends", {
+      $or: [{ requester: userId }, { requester: userId }],
+      status: 3,
+    });
+    res.status(200).json({
+      message: "All friends",
+      friends,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+const getFriendStatus = async (req, res) => {
+  try {
+    const { currentUser, user } = req.body;
+
+    const status = await Friend.findOne({
+      $or: [
+        { requester: currentUser, recipient: user },
+        { requester: user, recipient: currentUser },
+      ],
+    }).select("status");
+
+    if (!status) {
+      return res.status(200).json({
+        message: "not friends",
+        friendStatus: status,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Friend status",
+      friendStatus: status,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
 
 export {
   sendFriendRequest,
@@ -102,4 +171,5 @@ export {
   accepteFriendRequest,
   rejectFriendRequest,
   getAllFriends,
+  getFriendStatus,
 };

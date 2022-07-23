@@ -7,9 +7,9 @@ const friendsSchema = new mongoose.Schema(
     status: {
       type: Number,
       enums: [
-        0, //'add friend',
+        // 0, //'add friend',
         1, //'requested',
-        2, //'pending',
+        2, //'rejected',
         3, //'friends'
       ],
     },
