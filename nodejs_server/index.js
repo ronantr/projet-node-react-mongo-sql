@@ -5,6 +5,7 @@ import cors from "cors";
 import refreshTokenRoutes from "./routes/refreshToken.js";
 import { config } from "dotenv";
 import authRoutes from "./routes/auth.js";
+import usersRoutes from "./routes/users.js";
 import messagesRoutes from "./routes/messages.js";
 import friendsRoutes from "./routes/friends.js";
 
@@ -41,6 +42,7 @@ const server = app.listen(process.env.PORT, () => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/user", usersRoutes);
 app.use("/api/refreshToken", refreshTokenRoutes);
 app.use("/api/messages", messagesRoutes);
 app.use("/api/friend", friendsRoutes);
