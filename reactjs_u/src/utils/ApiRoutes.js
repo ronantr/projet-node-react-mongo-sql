@@ -11,3 +11,4 @@ export const rejectFriendRequestRoute = `${host}/api/friend/reject-friend-reques
 export const getAllFriendsRoute = `${host}/api/friend/all`;
 export const deleteFriendRoute = `${host}/api/friend/`;
 export const getFriendStatusRoute = `${host}/api/friend/friendStatus`;
+export const getAllFriendRequestsRoute = `${host}/api/friend/all-friend-requests`;

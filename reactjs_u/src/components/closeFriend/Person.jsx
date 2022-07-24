@@ -2,44 +2,65 @@ import { Button } from "@mui/material";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/Auth";
-import { getFriendStatusRoute } from "../../utils/ApiRoutes";
+import { getFriendStatusRoute, sendFriendRequestRoute } from "../../utils/ApiRoutes";
 import "./closeFriend.css";
 
-export default function User({person}) {
+export default function Person({person}) {
   const { isLoading, token, user } = useContext(AuthContext);
 
   const [friendStatus, setFriendStatus] = useState(null);
   
+  const handleClick = async () => {
+    console.log("------user ----- "+user);
+
+    try {
+      const res = await axios.post(
+        sendFriendRequestRoute, 
+        {
+        "recipientId": person._id,
+        "test": user._id,
+        },
+        {
+        headers: {
+          Authorization: `token ${token}`,
+        },
+
+      });
+      console.log(res.data);
+      setFriendStatus(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
     const getFriendStatus = async () => {
-      console.log(token)
         try {
           const res = await axios.post(getFriendStatusRoute, {
-            user: user._id,
+            "personId": person._id,
           }, {
             headers: {
               Authorization: `token ${token}`,
             },
           });
-          console.log(res.data);
-          setFriendStatus(res.data.friendStatus);
+          setFriendStatus(res.data.friendStatus.status);
         } catch (err) {
           console.log(err);
         }
       };
       useEffect(() => {
-        if (token) {
+        if(person) {
           getFriendStatus();
         }
       }, []);
       
   return (
     <li className="sidebarFriend">
-      <img className="sidebarFriendImg" src={user.profilePicture} alt="" />
-      <span className="sidebarFriendName">{user.username}</span>
+      <img className="sidebarFriendImg" src={person.profilePicture} alt="" />
+      <span className="sidebarFriendName">{person.username}</span>
 
-      {friendStatus === null && <Button>Add Friend</Button>}
-      {friendStatus === "requested" && <Button>Pending</Button>}
-      {friendStatus === "Friends" && <Button>Friends</Button>}
+      {!isLoading &&friendStatus === null && <Button onClick={handleClick}>Add Friend</Button>}
+      {friendStatus === 1 && <Button>Pending</Button>}
+      {friendStatus === 3 && <Button>Friends</Button>}
     </li>
 
   );

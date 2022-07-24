@@ -2,13 +2,13 @@ import Friend from "../models/Friend.js";
 import User from "../models/User.js";
 
 const sendFriendRequest = async (req, res) => {
-  console.log("test");
+  console.log(req.body);
   try {
-    requesterId = req.userId;
+    const requesterId = req.userId;
     const { recipientId } = req.body;
     console.log(
       requesterId,
-      "***********************************",
+      "************test add***********************",
       recipientId
     );
     const docFriend = await Friend.findOneAndUpdate(
@@ -16,21 +16,15 @@ const sendFriendRequest = async (req, res) => {
       { $set: { status: 1 } },
       { upsert: true, new: true }
     );
-    console.log(
-      await User.findOneAndUpdate(
-        { _id: { $in: [requesterId, recipientId] } },
-        { $push: { friends: docFriend._id } }
-      )
-    );
-    await User.findOneAndUpdate(
+    await User.updateMany(
       { _id: { $in: [requesterId, recipientId] } },
       { $push: { friends: docFriend._id } }
     );
 
-    console.log(docFriend);
     res.status(200).json({
       message: "Friend request sent",
       friend: recipientId,
+      status: docFriend.status,
     });
   } catch (err) {
     console.log(err);
@@ -41,7 +35,7 @@ const sendFriendRequest = async (req, res) => {
 };
 
 const deleteFriend = async (req, res) => {
-  requesterId = req.userId;
+  const requesterId = req.userId;
 
   const { recipientId } = req.body;
 
@@ -55,15 +49,15 @@ const deleteFriend = async (req, res) => {
 
 const accepteFriendRequest = async (req, res) => {
   try {
-    requesterId = req.userId;
+    const requesterId = req.userId;
 
     const { recipientId } = req.body;
 
-    const docFriend = Friend.findOneAndUpdate(
+    const docFriend = await Friend.findOneAndUpdate(
       { requester: requesterId, recipient: recipientId },
       { $set: { status: 3 } }
     );
-    await User.findOneAndUpdate(
+    await User.updateMany(
       { _id: { $in: [requesterId, recipientId] } },
       { $pull: { friends: docFriend._id } }
     );
@@ -82,14 +76,14 @@ const accepteFriendRequest = async (req, res) => {
 
 const rejectFriendRequest = async (req, res) => {
   try {
-    requesterId = req.userId;
+    const requesterId = req.userId;
     const { recipientId } = req.body;
 
-    const docFriend = Friend.findOneAndUpdate(
+    const docFriend = await Friend.findOneAndUpdate(
       { requester: requesterId, recipient: recipientId },
       { $set: { status: 2 } }
     );
-    await User.findOneAndUpdate(
+    await User.updateMany(
       { _id: { $in: [recipientId] } },
       { $pull: { friends: docFriend._id } }
     );
@@ -124,11 +118,14 @@ const rejectFriendRequest = async (req, res) => {
 
 const getAllFriends = async (req, res) => {
   try {
-    userId = req.userId;
-    const friends = User.findOne({ _id: userId }).populate("friends", {
-      $or: [{ requester: userId }, { requester: userId }],
+    const userId = req.userId;
+    const data = await User.findOne({ _id: userId }).populate("friends", {
+      // match: { $or: [{ requester: userId }, { requester: userId }] },
       status: 3,
     });
+    const friends = data.friends;
+    console.log(friends);
+
     res.status(200).json({
       message: "All friends",
       friends,
@@ -143,15 +140,22 @@ const getAllFriends = async (req, res) => {
 
 const getFriendStatus = async (req, res) => {
   try {
-    const { currentUser, user } = req.body;
-
+    const user = req.userId;
+    const { personId } = req.body;
+    console.log("currentUser" + user);
+    console.log("user" + personId);
     const status = await Friend.findOne({
       $or: [
-        { requester: currentUser, recipient: user },
-        { requester: user, recipient: currentUser },
+        { requester: user, recipient: personId },
+        { requester: personId, recipient: user },
       ],
+      // $and: [
+      //   { $or: [{ requester: currentUser, recipient: user }] },
+      //   { $or: [{ requester: user, recipient: currentUser }] },
+      // ],
     }).select("status");
 
+    console.log("sdtatus : " + status);
     if (!status) {
       return res.status(200).json({
         message: "not friends",
@@ -171,6 +175,28 @@ const getFriendStatus = async (req, res) => {
   }
 };
 
+const getAllFriendRequests = async (req, res) => {
+  try {
+    console.log("*******GeetAllFriends************");
+    const { personId } = req.body;
+    const data = await User.findOne({ _id: personId }).populate("friends", {
+      status: 1,
+    });
+    const friends = data.friends;
+    console.log("request*******************" + friends);
+
+    res.status(200).json({
+      message: "All friend requests",
+      requests: friends,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
 export {
   sendFriendRequest,
   deleteFriend,
@@ -178,4 +204,5 @@ export {
   rejectFriendRequest,
   getAllFriends,
   getFriendStatus,
+  getAllFriendRequests,
 };

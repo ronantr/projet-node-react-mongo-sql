@@ -32,7 +32,7 @@ const People = () => {
     return (
         <div>
             {allUsers.map((person) => (
-                <Person person={person} />
+                <Person key={person.username} person={person} />
                     ))}
         </div>
     );

@@ -1,0 +1,98 @@
+// MongoDB Playground
+// To disable this template go to Settings | MongoDB | Use Default Template For Playground.
+// Make sure you are connected to enable completions and to be able to run a playground.
+// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
+
+// Select the database to use.
+use('mydb');
+
+// The drop() command destroys all data from a collection.
+// Make sure you run it against the correct database and collection.
+// db.users.drop();
+// db.friends.drop();
+
+
+// Insert a few documents into the sales collection.
+db.users.insertMany([
+ {
+  "_id":ObjectId(),
+  "roles": [
+    "user"
+  ],
+  "friends": [],
+  "firstname": "Allegra",
+  "lastname": "Hensley",
+  "username": "user6",
+  "email": "user6@test.com",
+  "password": "$2b$10$NsmJmcxbJ8BJDu71UpYhs.YdqThfHhl2UOpCSijmKLMpFVbb6AM5G",
+},
+ {
+    "_id":ObjectId(),
+  "roles": [
+    "user"
+  ],
+  "friends": [],
+  "firstname": "kyle",
+  "lastname": "kyle",
+  "username": "user2",
+  "email": "user2@test.com",
+  "password": "$2b$10$NsmJmcxbJ8BJDu71UpYhs.YdqThfHhl2UOpCSijmKLMpFVbb6AM5G",
+  
+},
+ {
+    "_id":ObjectId(),
+
+  "roles": [
+    "user"
+  ],
+  "friends": [],
+  "firstname": "aqua",
+  "lastname": "aqua",
+  "username": "user3",
+  "email": "user3@test.com",
+  "password": "$2b$10$NsmJmcxbJ8BJDu71UpYhs.YdqThfHhl2UOpCSijmKLMpFVbb6AM5G",
+  
+},
+ {
+    "_id":ObjectId(),
+
+  "roles": [
+    "user"
+  ],
+  "friends": [],
+  "firstname": "test",
+  "lastname": "test",
+  "username": "user4",
+  "email": "user4@test.com",
+  "password": "$2b$10$NsmJmcxbJ8BJDu71UpYhs.YdqThfHhl2UOpCSijmKLMpFVbb6AM5G",
+  
+},
+ {
+    "_id":ObjectId(),
+
+  "roles": [
+    "user"
+  ],
+  "friends": [],
+  "firstname": "user5",
+  "lastname": "user ",
+  "username": "user5",
+  "email": "user5@test.com",
+  "password": "$2b$10$NsmJmcxbJ8BJDu71UpYhs.YdqThfHhl2UOpCSijmKLMpFVbb6AM5G",
+  
+}
+]);
+
+// // Run a find command to view items sold on April 4th, 2014.
+// db.sales.find({ date: { $gte: new Date('2014-04-04'), $lt: new Date('2014-04-05') } });
+
+// // Build an aggregation to view total sales for each product in 2014.
+// const aggregation = [
+//   { $match: { date: { $gte: new Date('2014-01-01'), $lt: new Date('2015-01-01') } } },
+//   { $group: { _id: '$item', totalSaleAmount: { $sum: { $multiply: [ '$price', '$quantity' ] } } } }
+// ];
+
+// // Run the aggregation and open a cursor to the results.
+// // Use toArray() to exhaust the cursor to return the whole result set.
+// // You can use hasNext()/next() to iterate through the cursor page by page.
+// db.sales.aggregate(aggregation);

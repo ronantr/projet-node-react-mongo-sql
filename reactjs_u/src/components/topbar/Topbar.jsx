@@ -1,8 +1,10 @@
 import "./topbar.css";
-import React from "react";
+import React, { useContext } from "react";
 import { Search, Person, Chat, Notifications } from "@mui/icons-material";
+import { AuthContext } from "../../context/Auth";
 
 export default function Topbar() {
+  const {user} = useContext(AuthContext);
   return (
     <div className="topbarContainer">
       <div className="topbarLeft">
@@ -37,6 +39,7 @@ export default function Topbar() {
           </div>
         </div>
         <img src="/assets/person/1.jpeg" alt="" className="topbarImg"/>
+        <span>{user?.username}</span>
       </div>
     </div>
   );
