@@ -2,9 +2,11 @@ import "./topbar.css";
 import React, { useContext } from "react";
 import { Search, Person, Chat, Notifications } from "@mui/icons-material";
 import { AuthContext } from "../../context/Auth";
+import MyNotifications from "./MyNotifications";
 
 export default function Topbar() {
   const {user} = useContext(AuthContext);
+  
   return (
     <div className="topbarContainer">
       <div className="topbarLeft">
@@ -34,8 +36,7 @@ export default function Topbar() {
             <span className="topbarIconBadge">2</span>
           </div>
           <div className="topbarIconItem">
-            <Notifications />
-            <span className="topbarIconBadge">1</span>
+          <MyNotifications />
           </div>
         </div>
         <img src="/assets/person/1.jpeg" alt="" className="topbarImg"/>
@@ -44,3 +45,4 @@ export default function Topbar() {
     </div>
   );
 }
+

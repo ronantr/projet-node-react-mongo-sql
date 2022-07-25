@@ -60,7 +60,7 @@ export default function Person({person}) {
 
       {!isLoading &&friendStatus === null && <Button onClick={handleClick}>Add Friend</Button>}
       {friendStatus === 1 && <Button>Pending</Button>}
-      {friendStatus === 3 && <Button>Friends</Button>}
+      {friendStatus === 3 && <Button color="success">Friends</Button>}
     </li>
 
   );

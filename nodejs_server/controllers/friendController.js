@@ -50,9 +50,11 @@ const deleteFriend = async (req, res) => {
 
 const accepteFriendRequest = async (req, res) => {
   try {
-    const requesterId = req.userId;
+    console.log("******  Accept   *************");
+    const recipientId = req.userId;
 
-    const { recipientId } = req.body;
+    const { requesterId } = req.body;
+    console.log("recipientId" + recipientId, "requesterId" + requesterId);
 
     const docFriend = await Friend.findOneAndUpdate(
       { requester: requesterId, recipient: recipientId },
@@ -77,8 +79,8 @@ const accepteFriendRequest = async (req, res) => {
 
 const rejectFriendRequest = async (req, res) => {
   try {
-    const requesterId = req.userId;
-    const { recipientId } = req.body;
+    const recipientId = req.userId;
+    const { requesterId } = req.body;
 
     const docFriend = await Friend.findOneAndUpdate(
       { requester: requesterId, recipient: recipientId },
@@ -117,19 +119,80 @@ const rejectFriendRequest = async (req, res) => {
   // )
 };
 
+// const getAllFriends = async (req, res) => {
+//   try {
+//     const userId = req.userId;
+//     const data = await User.findOne({ _id: userId }).populate("friends", {
+//       // match: { $or: [{ requester: userId }, { requester: userId }] },
+//       status: 3,
+//     });
+//     const friends = data.friends;
+//     console.log(friends);
+
+//     res.status(200).json({
+//       message: "All friends",
+//       friends,
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).json({
+//       message: "Internal server error",
+//     });
+//   }
+// };
+
 const getAllFriends = async (req, res) => {
   try {
     const userId = req.userId;
-    const data = await User.findOne({ _id: userId }).populate("friends", {
-      // match: { $or: [{ requester: userId }, { requester: userId }] },
-      status: 3,
-    });
-    const friends = data.friends;
-    console.log(friends);
+    const data = await User.aggregate([
+      {
+        $match: {
+          _id: { $ne: mongoose.Types.ObjectId(userId) },
+        },
+      },
+      {
+        $lookup: {
+          from: Friend.collection.name,
+          let: { friends: "$friends" },
+          pipeline: [
+            {
+              $match: {
+                recipient: mongoose.Types.ObjectId(userId),
+                $expr: { $in: ["$_id", "$$friends"] },
+              },
+            },
+            { $project: { status: 1 } },
+          ],
+          as: "friends",
+        },
+      },
+      {
+        $addFields: {
+          friendsStatus: {
+            $ifNull: [{ $min: "$friends.status" }, 0],
+          },
+        },
+      },
+      {
+        $project: {
+          username: 1,
+          friendsStatus: 1,
+        },
+      },
+      {
+        $match: {
+          friendsStatus: { $eq: 3 },
+        },
+      },
+    ]);
+
+    const friends = data;
+
+    console.log("request*******************" + JSON.stringify(friends));
 
     res.status(200).json({
-      message: "All friends",
-      friends,
+      message: "All friend requests",
+      requests: friends,
     });
   } catch (err) {
     console.log(err);

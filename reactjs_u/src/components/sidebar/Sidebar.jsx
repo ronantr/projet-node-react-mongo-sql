@@ -10,7 +10,7 @@ import { getAllFriendsRoute } from '../../utils/ApiRoutes';
 export default function Sidebar() {
   const { isLoading, token } = useContext(AuthContext);
 
-  const [friends, setFriends] = useState(null);
+  const [friends, setFriends] = useState([]);
   
     const getFriends= async () => {
         try {
@@ -47,8 +47,8 @@ export default function Sidebar() {
         <button className="sidebarButton">Show More</button>
         <hr className="sidebarHr" />
         <ul className="sidebarFriendList">
-          { friends !==null && friends.length>0 && friends.map((u) => (
-            <CloseFriend key={u.id} user={u} />
+          { friends && friends.length>0 && friends.map((u) => (
+            <CloseFriend key={u._id} user={u} />
           ))}
         </ul>
       </div>
