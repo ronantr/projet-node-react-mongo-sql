@@ -101,22 +101,6 @@ const rejectFriendRequest = async (req, res) => {
       message: "Internal server error",
     });
   }
-  //   const docA = await Friend.findOneAndRemove(
-  //     { requester: requesterId, recipient: recipientId }
-  // )
-  // const docB = await Friend.findOneAndRemove(
-  //     { recipient: requesterId, requester: recipientId }
-  // )
-  // // update requester
-  // await User.findOneAndUpdate(
-  //     { _id: requesterId },
-  //     { $pull: { friends: docA._id }}
-  // )
-  // // update recipient
-  // const updateRecipient= await User.findOneAndUpdate(
-  //     { _id: recipientId },
-  //     { $pull: { friends: docB._id }}
-  // )
 };
 
 // const getAllFriends = async (req, res) => {
@@ -147,7 +131,7 @@ const getAllFriends = async (req, res) => {
     const data = await User.aggregate([
       {
         $match: {
-          _id: { $ne: mongoose.Types.ObjectId(userId) },
+          _id: { $eq: mongoose.Types.ObjectId(userId) },
         },
       },
       {
@@ -157,8 +141,7 @@ const getAllFriends = async (req, res) => {
           pipeline: [
             {
               $match: {
-                recipient: mongoose.Types.ObjectId(userId),
-                $expr: { $in: ["$_id", "$$friends"] },
+                status: 3,
               },
             },
             { $project: { status: 1 } },
@@ -169,7 +152,7 @@ const getAllFriends = async (req, res) => {
       {
         $addFields: {
           friendsStatus: {
-            $ifNull: [{ $min: "$friends.status" }, 0],
+            $ifNull: ["$friends.status", 0],
           },
         },
       },
@@ -179,20 +162,15 @@ const getAllFriends = async (req, res) => {
           friendsStatus: 1,
         },
       },
-      {
-        $match: {
-          friendsStatus: { $eq: 3 },
-        },
-      },
     ]);
 
     const friends = data;
 
-    console.log("request*******************" + JSON.stringify(friends));
+    console.log("All friends*******************" + JSON.stringify(friends));
 
     res.status(200).json({
       message: "All friend requests",
-      requests: friends,
+      friends: friends,
     });
   } catch (err) {
     console.log(err);
