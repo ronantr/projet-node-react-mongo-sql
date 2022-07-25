@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Friend from "../models/Friend.js";
 import User from "../models/User.js";
 
@@ -175,15 +176,206 @@ const getFriendStatus = async (req, res) => {
   }
 };
 
+// const getAllFriendRequests = async (req, res) => {
+//   try {
+//     console.log("*******GeetAllFriends************");
+//     const userId = req.userId;
+// const data = await User.findOne({ _id: userId })
+//   .populate("friends", {
+//     status: 1,
+//   })
+
+//     const data = await User.aggregate([
+//       {
+//         $match: {
+//           _id: { $eq: mongoose.Types.ObjectId(userId) },
+//         },
+//       },
+//       { $project: { friends: 1, username: 1 } },
+//       // { $unwind: "$friends" },
+//       {
+//         $lookup: {
+//           from: Friend.collection.name,
+//           let: { friends: "$friends" },
+//           pipeline: [
+//             {
+//               $match: {
+//                 // recipient: mongoose.Types.ObjectId(userId),
+//                 status: 1,
+
+//                 // $expr: { $in: ["$_id", "$$friends"] },
+//               },
+//             },
+//             // {
+//             //   $lookup: {
+//             //     from: User.collection.name,
+//             //     pipeline: [
+//             //       {
+//             //         $match: {
+//             //           recipient: mongoose.Types.ObjectId(userId),
+//             //         },
+//             //       },
+//             //     ],
+//             //     as: "user",
+//             //   },
+//             // },
+//             {
+//               $project: {
+//                 frienId: {
+//                   $cond: [{ $eq: [$$friends, userId] }, $requester, $recipient],
+//                 },
+//                 recipient: 1,
+//                 requester: 1,
+//                 status: 1,
+//               },
+//             },
+//           ],
+//           as: "friends",
+//         },
+//       },
+//       // {
+//       //   $addFields: {
+//       //     friendsStatus: {
+//       //       $ifNull: [{ $min: "$friends.status" }, 0],
+//       //     },
+//       //     frienId: {
+//       //       $cond: [
+//       //         { $eq: ["$friends.recipient", userId] },
+//       //         "$friends.requester",
+//       //         "$friends.recipient",
+//       //       ],
+//       //     },
+//       //   },
+//       // },
+//       // {
+//       //   $project: {
+//       //     username: 1,
+
+//       //   },
+//       // },
+//     ]);
+//     const friends = data;
+
+//     console.log("request*******************" + JSON.stringify(friends));
+
+//     res.status(200).json({
+//       message: "All friend requests",
+//       requests: friends,
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).json({
+//       message: "Internal server error",
+//     });
+//   }
+// };
+
 const getAllFriendRequests = async (req, res) => {
   try {
-    console.log("*******GeetAllFriends************");
-    const { personId } = req.body;
-    const data = await User.findOne({ _id: personId }).populate("friends", {
-      status: 1,
+    console.log("*******Get All Friends Requests************");
+    const userId = req.userId;
+    const data = await User.aggregate([
+      {
+        $match: {
+          _id: { $ne: mongoose.Types.ObjectId(userId) },
+        },
+      },
+      {
+        $lookup: {
+          from: Friend.collection.name,
+          let: { friends: "$friends" },
+          pipeline: [
+            {
+              $match: {
+                recipient: mongoose.Types.ObjectId(userId),
+                $expr: { $in: ["$_id", "$$friends"] },
+              },
+            },
+            { $project: { status: 1 } },
+          ],
+          as: "friends",
+        },
+      },
+      {
+        $addFields: {
+          friendsStatus: {
+            $ifNull: [{ $min: "$friends.status" }, 0],
+          },
+        },
+      },
+      {
+        $project: {
+          username: 1,
+          friendsStatus: 1,
+        },
+      },
+      {
+        $match: {
+          friendsStatus: { $eq: 1 },
+        },
+      },
+    ]);
+
+    const friends = data;
+
+    console.log("request*******************" + JSON.stringify(friends));
+
+    res.status(200).json({
+      message: "All friend requests",
+      requests: friends,
     });
-    const friends = data.friends;
-    console.log("request*******************" + friends);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+export const getPeopleWithFriendStatusWithUser = async (req, res) => {
+  try {
+    console.log("*******Get All People with friends status************");
+    const userId = req.userId;
+    const data = await User.aggregate([
+      {
+        $match: {
+          _id: { $ne: mongoose.Types.ObjectId(userId) },
+        },
+      },
+      {
+        $lookup: {
+          from: Friend.collection.name,
+          let: { friends: "$friends" },
+          pipeline: [
+            {
+              $match: {
+                recipient: mongoose.Types.ObjectId(userId),
+                $expr: { $in: ["$_id", "$$friends"] },
+              },
+            },
+            { $project: { status: 1 } },
+          ],
+          as: "friends",
+        },
+      },
+      {
+        $addFields: {
+          friendsStatus: {
+            $ifNull: [{ $min: "$friends.status" }, 0],
+          },
+        },
+      },
+      {
+        $project: {
+          username: 1,
+          friendsStatus: 1,
+        },
+      },
+    ]);
+
+    const friends = data;
+
+    console.log("request*******************" + JSON.stringify(friends));
 
     res.status(200).json({
       message: "All friend requests",

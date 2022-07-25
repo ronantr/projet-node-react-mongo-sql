@@ -8,12 +8,13 @@ import "./home.css"
 import { AuthContext } from "../../context/Auth";
 import axios from "axios";
 import { getAllFriendRequestsRoute } from "../../utils/ApiRoutes";
+import { Alert, Paper } from "@mui/material";
 
 export default function Home() {
 
   const { isLoading, token } = useContext(AuthContext);
 
-  const [friendRequest, setFriendRequest] = useState([]);
+  const [friendRequests, setFriendRequests] = useState([]);
   
     const getAllFriendRequests = async () => {
         try {
@@ -22,8 +23,8 @@ export default function Home() {
               Authorization: `token ${token}`,
             },
           });
-          console.log(res.data);
-          setFriendRequest(res.data.requests);
+          console.log(res.data.requests);
+          setFriendRequests(res.data.requests);
         } catch (err) {
           console.log(err);
         }
@@ -40,12 +41,12 @@ export default function Home() {
     {/* <Topbar /> */}
     <div className="homeContainer">
 
-    {friendRequest && friendRequest.length > 0 && 
-    friendRequest.map((request) => 
-      <div className="friendRequest">
+    {friendRequests && friendRequests.length > 0 && 
+    friendRequests.map((request) => 
+      <Alert className="friendRequest">
         <span className="friendRequestName">{request.username}</span>
         <button className="friendRequestButton">Accept</button>
-      </div>
+      </Alert>
   
     )}
 
