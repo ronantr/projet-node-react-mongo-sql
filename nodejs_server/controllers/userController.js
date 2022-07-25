@@ -1,6 +1,23 @@
 import User from "../models/User.js";
 
-const getAllUsers = async (req, res, next) => {
+export const getUserById = async (req, res, next) => {
+  try {
+    const users = await User.findOne({ _id: { $eq: req.params.id } }).select({
+      password: 0,
+    });
+
+    if (users.length === 0) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+    return res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+export const getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find({ _id: { $ne: req.userId } }).select({
       email: 1,
@@ -15,7 +32,7 @@ const getAllUsers = async (req, res, next) => {
 };
 
 //update user
-const updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
   if (req.userId === req.params.id) {
     if (req.body.password) {
       try {
@@ -39,7 +56,7 @@ const updateUser = async (req, res) => {
 };
 
 //delete user
-const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   if (req.userId === req.params.id) {
     try {
       await User.findByIdAndDelete(req.params.id);
@@ -51,5 +68,3 @@ const deleteUser = async (req, res) => {
     return res.status(403).json("You can delete only your account!");
   }
 };
-
-export { getAllUsers, updateUser, deleteUser };
