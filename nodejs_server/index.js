@@ -8,7 +8,8 @@ import authRoutes from "./routes/auth.js";
 import usersRoutes from "./routes/users.js";
 import messagesRoutes from "./routes/messages.js";
 import friendsRoutes from "./routes/friends.js";
-
+import path from "path";
+import { fileURLToPath } from "url";
 const app = express();
 config();
 
@@ -40,6 +41,11 @@ app.use(express.json());
 const server = app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", usersRoutes);

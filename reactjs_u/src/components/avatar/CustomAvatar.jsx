@@ -42,6 +42,6 @@ export default function CustomAvatar({ name="", fullSize=false }) {
     }
   }
   return (
-      <Avatar {...stringAvatar(name)}  sx={styleFullSize} />
+      <Avatar {...stringAvatar("name")}  sx={styleFullSize} />
   );
 }

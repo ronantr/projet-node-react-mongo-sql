@@ -33,20 +33,39 @@ export const getAllUsers = async (req, res, next) => {
 
 //update user
 export const updateUser = async (req, res) => {
+  let profile = null;
+  console.log(req.file);
+  const { firstname, lastname, username, email, password } = req.body;
+
+  const objForUpdate = {};
+
+  if (firstname) objForUpdate.firstname = firstname;
+  if (lastname) objForUpdate.lastname = lastname;
+  if (username) objForUpdate.username = username;
+  if (email) objForUpdate.email = email;
+  if (password) objForUpdate.password = password;
+  if (req.file) {
+    // console("req.file", req.file);
+
+    objForUpdate.profile_pic = `${req.protocol}://${req.get(
+      "host"
+    )}/public/uploads/${req.file.filename}`;
+  }
+
   if (req.userId === req.params.id) {
-    if (req.body.password) {
+    if (password) {
       try {
         const salt = await bcrypt.genSalt(10);
-        req.body.password = await bcrypt.hash(req.body.password, salt);
+        password = await bcrypt.hash(password, salt);
       } catch (err) {
         return res.status(500).json(err);
       }
     }
     try {
       const user = await User.findByIdAndUpdate(req.params.id, {
-        $set: req.body,
+        $set: objForUpdate,
       });
-      res.status(200).json("Account has been updated");
+      return res.status(200).json("user");
     } catch (err) {
       return res.status(500).json(err);
     }

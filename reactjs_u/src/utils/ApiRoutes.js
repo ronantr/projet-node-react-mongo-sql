@@ -6,6 +6,7 @@ export const getAllMessagesRoute = `${host}/api/messages/allMessages`;
 export const sendMessageRoute = `${host}/api/messages/addMessage`;
 
 export const getUserByIdRoute = `${host}/api/user`;
+export const updateUserRoute = `${host}/api/user/test`;
 
 export const sendFriendRequestRoute = `${host}/api/friend/send-friend-request`;
 export const accepteFriendRequestRoute = `${host}/api/friend/accept-friend-request`;

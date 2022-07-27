@@ -26,12 +26,20 @@ const Schema = mongoose.Schema({
     required: true,
     min: 8,
   },
+  profile_pic: {
+    type: String,
+    required: false,
+  },
+  cover_pic: {
+    type: String,
+    required: false,
+  },
   roles: {
     type: [String],
     enum: ["user", "admin"],
     default: ["user"],
   },
-    friends: [
+  friends: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Friend",
