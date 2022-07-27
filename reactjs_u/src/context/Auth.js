@@ -28,10 +28,11 @@ const AuthProvider = (props) => {
 
   const logout = () => {
     console.log("logout");
-    setError(null);
-    setUser(null);
     localStorage.removeItem("app-user-token");
     localStorage.removeItem("app-user");
+    setError(null);
+    setUser(null);
+    setToken(null);
     setIsLoading(false);
   };
 
