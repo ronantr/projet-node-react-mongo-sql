@@ -18,6 +18,7 @@ import Topbar from "./components/topbar/Topbar";
 import axios from "axios";
 import { getAllUsersRoute } from "./utils/ApiRoutes";
 import People from "./pages/People";
+import Admin from "./Admin/Admin";
 function App() {
   const { isLoading, token, logout, user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -28,8 +29,12 @@ function App() {
 
   return (
     <>
-      {token && (
+      {token && user && (
         <>
+          {console.log(
+            "test role : ",
+            user && user.roles && user.roles.includes("admin")
+          )}
           <Topbar />
           <nav>
             <ul>
@@ -55,7 +60,20 @@ function App() {
         <Route exact path="/login" element={<Login />} />
         <Route
           element={
-            <ProtectedRoute isAuthLoading={isLoading} isAllowed={!!user} />
+            <ProtectedRoute
+              isAuthLoading={isLoading}
+              isAllowed={user && user.roles && user.roles.includes("admin")}
+            />
+          }
+        >
+          <Route path="/admin" element={<Admin />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute
+              isAuthLoading={isLoading}
+              isAllowed={user && user.roles && user.roles.includes("user")}
+            />
           }
         >
           <Route path="/" element={<Home />} />

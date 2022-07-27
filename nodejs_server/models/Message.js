@@ -7,6 +7,10 @@ const Schema = mongoose.Schema(
         type: String,
         required: true,
       },
+      isModerated: {
+        type: Boolean,
+        default: false,
+      },
     },
     users: Array,
     sender: {
