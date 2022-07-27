@@ -20,6 +20,8 @@ import axios from "axios";
 import { getAllUsersRoute } from "./utils/ApiRoutes";
 import People from "./pages/People";
 import Admin from "./Admin/Admin";
+import User from "./Admin/pages/user/User";
+import UserList from "./Admin/pages/userList/UserList";
 
 function App() {
   const location = useLocation();
@@ -70,6 +72,8 @@ function App() {
           }
         >
           <Route path="/admin" element={<Admin />} />
+          {/* <Route path="/admin/user/{user.id}" element={<User />} /> */}
+          <Route path="/admin/users" element={<UserList />} />
         </Route>
         <Route
           element={
@@ -84,6 +88,7 @@ function App() {
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/persons" element={<People />} />
+          
         </Route>
       </Routes>
     </>
