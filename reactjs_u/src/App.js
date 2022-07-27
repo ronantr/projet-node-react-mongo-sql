@@ -5,6 +5,7 @@ import {
   Route,
   Link,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 import "./App.css";
 import Chat from "./pages/Chat";
@@ -19,22 +20,24 @@ import axios from "axios";
 import { getAllUsersRoute } from "./utils/ApiRoutes";
 import People from "./pages/People";
 import Admin from "./Admin/Admin";
+
 function App() {
+  const location = useLocation();
+
   const { isLoading, token, logout, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("token : ", token);
-  }, [token, user]);
+    if (user && location.pathname === "/login") {
+      user.roles.includes("admin") ? navigate("/admin") : navigate("/");
+    }
+  }, [token, user, location.pathname]);
 
   return (
     <>
+      {isLoading && <div>Loading...</div>}
       {token && user && (
         <>
-          {console.log(
-            "test role : ",
-            user && user.roles && user.roles.includes("admin")
-          )}
           <Topbar />
           <nav>
             <ul>

@@ -16,14 +16,12 @@ const AuthProvider = (props) => {
   const [error, setError] = useState(null);
 
   const login = async (username, password) => {
-    console.log(token);
     if (!token) {
       setIsLoading(true);
       setError(null);
       await loginRequest(username, password);
       setIsLoading(false);
     }
-    navigate("/");
   };
 
   const logout = () => {
@@ -60,6 +58,10 @@ const AuthProvider = (props) => {
       );
       setUser(response.user);
       setToken(response.accessToken);
+      console.log(response.user.roles.includes("admin"));
+      if (response.user.roles.includes("admin")) {
+        navigate("/admin");
+      }
       navigate("/");
     } else {
       setError(response.message);
