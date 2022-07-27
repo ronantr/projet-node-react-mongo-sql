@@ -32,8 +32,16 @@ function stringAvatar(name) {
   };
 }
 
-export default function CustomAvatar({ name }) {
+export default function CustomAvatar({ name="", fullSize=false }) {
+
+  let styleFullSize={}
+  if(fullSize){
+    styleFullSize={
+      width: '100%',
+      height: '100%',
+    }
+  }
   return (
-      <Avatar {...stringAvatar(name)} />
+      <Avatar {...stringAvatar(name)}  sx={styleFullSize} />
   );
 }

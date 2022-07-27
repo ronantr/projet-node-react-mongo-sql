@@ -9,12 +9,13 @@ import axios from "axios";
 import { getUserById, getUserByIdRoute } from "../../utils/ApiRoutes";
 import { AuthContext } from "../../context/Auth";
 import CustomAvatar from "../../components/avatar/CustomAvatar";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { Button, ListItem } from "@mui/material";
 
 export default function Profile() {
   const userId = useParams().id;
   const {token} = useContext(AuthContext);
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState([{}]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -37,8 +38,7 @@ export default function Profile() {
 
   return (
     <>
-
-     {user !== undefined &&  
+     {!isLoading && user !== undefined && Object.keys(user).length > 0 &&  
       <div className="profile">
         <Sidebar />
         <div className="profileRight">
@@ -49,27 +49,19 @@ export default function Profile() {
                 src="../assets/post/3.jpeg"
                 alt=""
               />
-              {/* <CustomAvatar name={user.username} style={{
-                width: "150px",
-                height: "150px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                position: "absolute",
-                left: "0",
-                right: "0",
-                margin: "auto",
-                top: "150px",
-                border: "3px solid #fff",
-              }}/> */}
-              <img
+              <div className="profileUserImg">
+              <CustomAvatar name={user.username} fullSize/>
+              </div>
+              {/* <img
                 className="profileUserImg"
                 src="../assets/person/7.jpeg"
                 alt=""
-              />
+              /> */}
             </div>
             <div className="profileInfo">
                 <h4 className="profileInfoName">{user.lastname} {user.firstname}</h4>
                 {/* <span className="profileInfoDesc">Hello my friends!</span> */}
+                <Button variant="contained" component={Link} to={`/profile/${user._id}`}>Send message</Button>
             </div>
           </div>
           <div className="profileRightBottom">

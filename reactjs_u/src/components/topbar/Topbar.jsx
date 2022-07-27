@@ -3,11 +3,14 @@ import React, { useContext } from "react";
 import { Search, Person, Chat, Notifications } from "@mui/icons-material";
 import { AuthContext } from "../../context/Auth";
 import MyNotifications from "./MyNotifications";
+import CustomAvatar from "../avatar/CustomAvatar";
 
 export default function Topbar() {
   const {user} = useContext(AuthContext);
   
   return (
+    <>
+    {user !== undefined && Object.keys(user).length > 0 && 
     <div className="topbarContainer">
       <div className="topbarLeft">
         <span className="logo">Mon GES</span>
@@ -39,10 +42,12 @@ export default function Topbar() {
           <MyNotifications />
           </div>
         </div>
-        <img src="/assets/person/1.jpeg" alt="" className="topbarImg"/>
+        <CustomAvatar name={user.username} />
         <span>{user?.username}</span>
       </div>
     </div>
+    } 
+    </>
   );
 }
 

@@ -141,25 +141,56 @@ const getAllFriends = async (req, res) => {
           pipeline: [
             {
               $match: {
+                // $expr: { $in: ["$$friends.status", "$$friends"] },
                 status: 3,
               },
             },
-            { $project: { status: 1 } },
+
+            {
+              $project: {
+                status: 1,
+                friend_id: {
+                  $cond: [
+                    {
+                      $eq: ["$recipient", mongoose.Types.ObjectId(userId)],
+                    },
+                    "$requester",
+                    "$recipient",
+                  ],
+                },
+              },
+            },
+            {
+              $lookup: {
+                from: User.collection.name,
+                localField: "friend_id",
+                foreignField: "_id",
+                // let: { friend: "$friend" },
+                // pipeline: [
+                //   {
+                //     $project: {
+                //      password: 0,
+                //     },
+                //   },
+                // ],
+                as: "friend",
+              },
+            },
           ],
           as: "friends",
         },
       },
       {
-        $addFields: {
-          friendsStatus: {
-            $ifNull: ["$friends.status", 0],
-          },
-        },
+        $unwind: "$friends",
       },
       {
         $project: {
-          username: 1,
-          friendsStatus: 1,
+          _id: { $arrayElemAt: ["$friends.friend._id", 0] },
+          username: { $arrayElemAt: ["$friends.friend.username", 0] },
+          firstname: { $arrayElemAt: ["$friends.friend.firstname", 0] },
+          lastname: { $arrayElemAt: ["$friends.friend.lastname", 0] },
+          email: { $arrayElemAt: ["$friends.friend.email", 0] },
+          // friends: { $arrayElemAt: ["$friends.friend.", 0] },
         },
       },
     ]);
@@ -169,7 +200,7 @@ const getAllFriends = async (req, res) => {
     console.log("All friends*******************" + JSON.stringify(friends));
 
     res.status(200).json({
-      message: "All friend requests",
+      message: "All friends",
       friends: friends,
     });
   } catch (err) {
