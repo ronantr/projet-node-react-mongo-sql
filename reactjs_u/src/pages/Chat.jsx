@@ -8,7 +8,7 @@ import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Contacts from "../components/chat/Contacts";
-import { getAllUsersRoute } from "../utils/ApiRoutes";
+import { getAllFriendsRoute, getAllUsersRoute } from "../utils/ApiRoutes";
 import Welcome from "../components/chat/Welcome";
 import ChatBox from "../components/chat/ChatBox";
 import { AuthContext } from "../context/Auth";
@@ -57,13 +57,13 @@ const Chat = () => {
     async function fetchDataJson() {
       let contacts = null;
       return await axios
-        .get(getAllUsersRoute, {
+        .get(getAllFriendsRoute, {
           headers: {
             Authorization: `token ${token}`,
           },
         })
         .then((res) => {
-          contacts = res.data;
+          contacts = res.data.friends;
           return contacts;
         })
         .catch((error) => {
